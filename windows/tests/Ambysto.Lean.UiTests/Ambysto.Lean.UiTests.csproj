@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- UI tests of the app through the Windows UI Automation client (part of the Windows desktop runtime; no package).
+       They run in the console session only (TestCategory=Console) and start the built app; they never open the Recycle
+       Bin and never reveal a file, except UninstallTableTests (ASP-16), which presses the magnifier of its own test entry and closes the
+       File Explorer window it opens. Only MoveAndPutBackTests moves anything: its own fixture items under
+       %USERPROFILE%\LeanUiMove-*, which it puts back or leaves in the Recycle Bin (never emptied). AppsAndCachesSpaceTests'
+       Copy tests write a stand-in %LOCALAPPDATA%\Docker\wsl\disk\docker_data.vhdx only when %LOCALAPPDATA%\Docker is absent,
+       and remove that file and the folders they made when empty. The expected strings
+       come from Ambysto.Lean.Core's Copy.Text. -->
+  <PropertyGroup>
+    <TargetFramework>net10.0-windows10.0.26100.0</TargetFramework>
+    <SupportedOSPlatformVersion>10.0.26100.0</SupportedOSPlatformVersion>
+    <UseWPF>true</UseWPF>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+    <RootNamespace>Ambysto.Lean.UiTests</RootNamespace>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="MSTest" Version="4.4.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../src/Ambysto.Lean.Core/Ambysto.Lean.Core.csproj" />
+    <!-- ASP-20 phase B: the stand-in for uv.exe; built first, copied to <output>/FakeTool by the target below. -->
+    <ProjectReference Include="../Ambysto.Lean.FakeTool/Ambysto.Lean.FakeTool.csproj" ReferenceOutputAssembly="false" />
+  </ItemGroup>
+  <Target Name="CopyFakeToolToOutput" AfterTargets="Build">
+    <ItemGroup>
+      <FakeToolFile Include="$(MSBuildThisFileDirectory)../Ambysto.Lean.FakeTool/bin/$(Configuration)/net10.0/uv.*" />
+    </ItemGroup>
+    <Copy SourceFiles="@(FakeToolFile)" DestinationFolder="$(OutDir)FakeTool" SkipUnchangedFiles="true" />
+  </Target>
+</Project>

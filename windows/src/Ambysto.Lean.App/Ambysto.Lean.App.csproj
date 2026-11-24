@@ -1,0 +1,57 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Ambysto Lean for Windows: WinUI 3, unpackaged, Windows App SDK self-contained (intent decision 15). Views and view
+       models only; everything that decides, measures or moves is in Ambysto.Lean.Core. -->
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows10.0.26100.0</TargetFramework>
+    <TargetPlatformMinVersion>10.0.26100.0</TargetPlatformMinVersion>
+    <SupportedOSPlatformVersion>10.0.26100.0</SupportedOSPlatformVersion>
+    <UseWinUI>true</UseWinUI>
+    <WindowsPackageType>None</WindowsPackageType>
+    <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
+    <!-- Group 13 (finding 2026-10-17): without the MSIX tooling an unpackaged publish leaves out AmbystoLean.pri, and the
+         published exe stops at start-up (0xC000027B); with it the resource index (which carries the compiled XAML) is
+         published and the app starts. -->
+    <EnableMsixTooling>true</EnableMsixTooling>
+    <Platforms>x64</Platforms>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <AssemblyName>AmbystoLean</AssemblyName>
+    <!-- ASP-13: the icon is generated from the brand logo by scripts/windows-art.py. -->
+    <ApplicationIcon>Assets\AmbystoLean.ico</ApplicationIcon>
+    <RootNamespace>Ambysto.Lean.App</RootNamespace>
+    <IsPackable>false</IsPackable>
+    <!-- The notifier's P/Invoke and COM source generators (AlertNotifier.cs). -->
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <!-- ASP-14: the neon of the scan readout (the brand book's Neon Rule, ambysto-assets#2): a glow on the meter's head and the cursor, a sweep
+       line on the zones being read, scanlines on the readout. It ships only after the owner merges that PR, so it is off: build with
+       -p:LeanNeon=true to see it. -->
+  <!-- ASP-33: the Pro features live in a private module, present only in the private repository. A release build there passes
+       -p:LeanPro=true, and an unset LeanPro turns on by itself where the module exists (windows/Directory.Build.props); every other build, the public one included, has no Pro features. -->
+  <PropertyGroup Condition="'$(LeanPro)' == 'true'">
+    <DefineConstants>$(DefineConstants);LEAN_PRO</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup Condition="'$(LeanPro)' == 'true'">
+    <ProjectReference Include="..\..\pro\Ambysto.Lean.Pro\Ambysto.Lean.Pro.csproj" />
+  </ItemGroup>
+  <PropertyGroup Condition="'$(LeanNeon)' == 'true'">
+    <DefineConstants>$(DefineConstants);LEAN_NEON</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="2.5.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- Copied next to the exe (and into the publish folder, so the installer carries it): MainWindow sets the window and
+         taskbar icon from this file. -->
+    <None Update="Assets\AmbystoLean.ico" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- ASP-12: the bundled fonts (JetBrains Mono and Geist, OFL) are copied next to the exe under Assets\Fonts\ and into the publish
+         folder, so the installer carries them with their licences. Theme.xaml loads them as ms-appx:///Assets/Fonts/#family. -->
+    <Content Include="Assets\Fonts\*.ttf" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    <None Update="Assets\Fonts\OFL-*.txt" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="../Ambysto.Lean.Core/Ambysto.Lean.Core.csproj" />
+  </ItemGroup>
+</Project>

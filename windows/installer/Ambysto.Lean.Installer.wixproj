@@ -1,0 +1,64 @@
+<Project Sdk="WixToolset.Sdk/5.0.2">
+  <!-- The per-user installer (plan group 13; owner decision Q1: WiX Toolset v5, a build-time SDK of this project only).
+       Building it publishes the app (self-contained, unpackaged) into obj/ and packs that folder. -->
+  <PropertyGroup>
+    <OutputName>AmbystoLean</OutputName>
+    <InstallerPlatform>x64</InstallerPlatform>
+    <AppProject>$(MSBuildThisFileDirectory)..\src\Ambysto.Lean.App\Ambysto.Lean.App.csproj</AppProject>
+    <AppPublishDir>$(MSBuildThisFileDirectory)obj\app-publish\</AppPublishDir>
+    <!-- Every build a higher product version (a real PC, 2026-10-18): with the same version, MajorUpgrade does not remove the
+         installed product, both stay registered, and Windows Installer keeps every installed file of an equal version
+         ("Won't Overwrite ... Existing file is of an equal version"), so the old AmbystoLean.dll ran with the new XAML and the app
+         ended at start (0xc000027b). Unless a version is given: 1.<months since 2025-12>.<minute of the month, UTC>, which rises
+         with time, stays above the previews' 1.0.0, and fits MSI's limits (minor <= 255 until 2047, build <= 44639). -->
+    <AppVersionMinor>$([MSBuild]::Add($([MSBuild]::Multiply($([MSBuild]::Subtract($([System.DateTime]::UtcNow.Year), 2026)), 12)), $([System.DateTime]::UtcNow.Month)))</AppVersionMinor>
+    <AppVersionBuild>$([MSBuild]::Add($([MSBuild]::Multiply($([MSBuild]::Subtract($([System.DateTime]::UtcNow.Day), 1)), 1440)), $([MSBuild]::Add($([MSBuild]::Multiply($([System.DateTime]::UtcNow.Hour), 60)), $([System.DateTime]::UtcNow.Minute)))))</AppVersionBuild>
+    <LeanProRequired Condition="'$(LeanProRequired)' == '' And Exists('$(MSBuildThisFileDirectory)..\pro\Ambysto.Lean.Pro\Ambysto.Lean.Pro.csproj')">true</LeanProRequired>
+    <AppVersion Condition="'$(AppVersion)' == ''">1.$(AppVersionMinor).$(AppVersionBuild)</AppVersion>
+    <LeanFrameworkLanguages>en-US;en-GB</LeanFrameworkLanguages>
+    <EmbeddedUIDll>$(MSBuildThisFileDirectory)obj\EmbeddedUI.dll</EmbeddedUIDll>
+    <VcVarsBat>C:\Program Files (x86)\Microsoft Visual Studio\18\BuildTools\VC\Auxiliary\Build\vcvars64.bat</VcVarsBat>
+    <VcVarsBat Condition="!Exists('$(VcVarsBat)')">C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Auxiliary\Build\vcvars64.bat</VcVarsBat>
+    <DefineConstants>AppPublishDir=$(AppPublishDir);AppVersion=$(AppVersion);EmbeddedUIDll=$(EmbeddedUIDll)</DefineConstants>
+    <!-- A per-user package installs files into the profile, which the ICEs written for per-machine packages flag
+         (ICE38/ICE64/ICE91: a profile file as key path, folders without RemoveFolder, per-user duplication). -->
+    <!-- ICE61 warns that a MajorUpgrade with AllowSameVersionUpgrades also removes an equal version: intended here (Package.wxs). -->
+    <SuppressIces>ICE38;ICE64;ICE91;ICE61</SuppressIces>
+    <!-- WIX1101 (WiX 5.0.2): "The DefaultLanguage '0' was used for file '<id>' which has no language. Specifying a language that
+         is different from the actual file may result in unexpected versioning behavior during a repair or while patching. Either
+         specify a value for DefaultLanguage or put the language in the version information resource to eliminate this warning."
+         Without DefaultLanguage="0", ICE60 fails on the five bundled fonts (Package.wxs, components LeanFont*): the File table
+         carries their font version and no language. A build without this suppression (2026-10-18, 43de857) raised WIX1101 for
+         those five files only. Language 0 is neutral, which a font is. The suppression covers the whole package, so recheck that
+         list when files are added. ICE60 itself is not suppressed. -->
+    <SuppressSpecificWarnings>1101</SuppressSpecificWarnings>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- The installer's screens (owner decision 2026-10-18). Build time only, like the SDK. -->
+    <PackageReference Include="WixToolset.UI.wixext" Version="5.0.2" />
+  </ItemGroup>
+  <Target Name="PublishApp" BeforeTargets="BeforeBuild">
+    <MakeDir Directories="$(MSBuildThisFileDirectory)obj" />
+    <Exec Command="cmd.exe /c &quot;call &quot;$(VcVarsBat)&quot; &gt;nul &amp;&amp; cl.exe /nologo /O2 /EHsc /W3 /DUNICODE /D_UNICODE /LD &quot;$(MSBuildThisFileDirectory)EmbeddedUI.cpp&quot; /Fe:&quot;$(EmbeddedUIDll)&quot; /Fo:&quot;$(MSBuildThisFileDirectory)obj\EmbeddedUI.obj&quot; user32.lib gdi32.lib gdiplus.lib msi.lib shell32.lib advapi32.lib urlmon.lib ole32.lib&quot;" />
+    <RemoveDir Directories="$(AppPublishDir)" />
+    <!-- Restore in its own evaluation (a distinct global property), then publish in a fresh one that imports what the
+         restore generated; "Restore;Publish" in one call builds without the Windows App SDK's XAML targets. -->
+    <MSBuild Projects="$(AppProject)" Targets="Restore" Properties="Configuration=Release;Platform=x64;RuntimeIdentifier=win-x64;SelfContained=true;LeanInstallerRestore=true" />
+    <!-- The app and Core carry the package's version (hard review 2026-10-18): About and the journal's appVersion name the
+         installed build, and each new build's assemblies outrank the old ones. -->
+    <MSBuild Projects="$(AppProject)" Targets="Publish" Properties="Configuration=Release;Platform=x64;RuntimeIdentifier=win-x64;SelfContained=true;PublishDir=$(AppPublishDir);Version=$(AppVersion)" />
+    <!-- The Windows App SDK's own language folders (one per culture, .mui files only): English only while the app is
+         English only; the owner's six languages come with the localisation step and extend LeanFrameworkLanguages.
+         SatelliteResourceLanguages does not reach these folders (measured 2026-10-17), and newer culture ids among them
+         fail the installer's validation (ICE03). Only the publish folder in obj/ is changed. -->
+    <ItemGroup>
+      <LeanCultureFolder Include="$([System.IO.Directory]::GetDirectories('$(AppPublishDir)'))" />
+      <LeanDropFolder Include="@(LeanCultureFolder)" Condition="$([System.Text.RegularExpressions.Regex]::IsMatch('%(Filename)%(Extension)', '^[a-z]{2,3}(-[A-Za-z0-9]{2,8})+$', RegexOptions.IgnoreCase)) and !$([System.Text.RegularExpressions.Regex]::IsMatch(';$(LeanFrameworkLanguages);', ';%(Filename)%(Extension);', RegexOptions.IgnoreCase))" />
+    </ItemGroup>
+    <RemoveDir Directories="@(LeanDropFolder)" />
+    <!-- ASP-33: wherever the Pro module exists (the private repository) an installer build requires it in the publish folder and
+         fails without it, whatever the reason it is missing (LeanPro=false in the environment included). Only an explicit
+         -p:LeanProRequired=false builds a no-Pro MSI there. The public repository has no module and the guard is off. -->
+    <Error Condition="'$(LeanProRequired)' == 'true' And !Exists('$(AppPublishDir)Ambysto.Lean.Pro.dll')" Text="LeanProRequired is set but Ambysto.Lean.Pro.dll is not in the publish folder: the Pro module is missing." />
+  </Target>
+</Project>

@@ -1,0 +1,119 @@
+{
+  "solution": "windows/Ambysto.Lean.slnx",
+  "suites": [
+    {
+      "name": "core",
+      "context": "session0",
+      "filter": "TestCategory!=Console&TestCategory!=Admin&TestCategory!=ProDebug",
+      "setup": "windows/tests/fixtures/Set-OtherOwnerFixture.ps1",
+      "teardown": "windows/tests/fixtures/Remove-OtherOwnerFixture.ps1"
+    },
+    {
+      "name": "console",
+      "context": "console",
+      "filter": "TestCategory=Console&TestCategory!=ProDebug"
+    },
+    {
+      "name": "admin",
+      "context": "admin",
+      "filter": "TestCategory=Admin&TestCategory!=ProDebug"
+    },
+    {
+      "name": "pro-debug",
+      "context": "console",
+      "filter": "TestCategory=ProDebug",
+      "configuration": "Debug"
+    }
+  ],
+  "host_checks": [
+    "scripts/windows-choke-points.sh",
+    "scripts/windows-choke-points-fixtures.sh",
+    "scripts/windows-packages.sh",
+    "scripts/windows-packages-fixtures.sh",
+    "scripts/copy-lint.sh",
+    "scripts/windows-theme-colours.sh"
+  ],
+  "mutation": {
+    "project": "windows/tests/Ambysto.Lean.Core.Tests",
+    "config": "windows/stryker-config.json"
+  },
+  "binary_checks": [
+    {
+      "name": "release-has-no-update-fixture",
+      "configuration": "Release",
+      "files": [
+        "windows/src/Ambysto.Lean.App/bin/Release/net10.0-windows10.0.26100.0/win-x64/AmbystoLean.dll"
+      ],
+      "absent": "--update-qa"
+    },
+    {
+      "name": "release-has-no-update-fixture-reader",
+      "configuration": "Release",
+      "files": [
+        "windows/src/Ambysto.Lean.App/bin/Release/net10.0-windows10.0.26100.0/win-x64/AmbystoLean.dll"
+      ],
+      "absent": "UpdateQa"
+    },
+    {
+      "name": "debug-has-update-fixture",
+      "configuration": "Debug",
+      "files": [
+        "windows/src/Ambysto.Lean.App/bin/Debug/net10.0-windows10.0.26100.0/win-x64/AmbystoLean.dll"
+      ],
+      "present": "--update-qa"
+    },
+    {
+      "name": "release-has-no-pro",
+      "configuration": "Release",
+      "files": [
+        "windows/src/Ambysto.Lean.App/bin/Release/net10.0-windows10.0.26100.0/win-x64/AmbystoLean.dll",
+        "windows/src/Ambysto.Lean.App/bin/Release/net10.0-windows10.0.26100.0/win-x64/AmbystoLean.exe"
+      ],
+      "absent": "--pro"
+    },
+    {
+      "name": "debug-has-pro",
+      "configuration": "Debug",
+      "files": [
+        "windows/src/Ambysto.Lean.App/bin/Debug/net10.0-windows10.0.26100.0/win-x64/AmbystoLean.dll"
+      ],
+      "present": "--pro"
+    },
+    {
+      "name": "release-has-no-suggest-delay",
+      "configuration": "Release",
+      "files": [
+        "windows/src/Ambysto.Lean.App/bin/Release/net10.0-windows10.0.26100.0/win-x64/AmbystoLean.dll",
+        "windows/src/Ambysto.Lean.App/bin/Release/net10.0-windows10.0.26100.0/win-x64/AmbystoLean.exe"
+      ],
+      "absent": "--suggest-delay"
+    },
+    {
+      "name": "release-has-no-listing-delay",
+      "configuration": "Release",
+      "files": [
+        "windows/src/Ambysto.Lean.App/bin/Release/net10.0-windows10.0.26100.0/win-x64/AmbystoLean.dll",
+        "windows/src/Ambysto.Lean.App/bin/Release/net10.0-windows10.0.26100.0/win-x64/AmbystoLean.exe"
+      ],
+      "absent": "--listing-delay"
+    },
+    {
+      "name": "release-has-no-move-delay",
+      "configuration": "Release",
+      "files": [
+        "windows/src/Ambysto.Lean.App/bin/Release/net10.0-windows10.0.26100.0/win-x64/AmbystoLean.dll",
+        "windows/src/Ambysto.Lean.App/bin/Release/net10.0-windows10.0.26100.0/win-x64/AmbystoLean.exe"
+      ],
+      "absent": "--move-delay"
+    },
+    {
+      "name": "release-has-no-fail-temp-reread",
+      "configuration": "Release",
+      "files": [
+        "windows/src/Ambysto.Lean.App/bin/Release/net10.0-windows10.0.26100.0/win-x64/AmbystoLean.dll",
+        "windows/src/Ambysto.Lean.App/bin/Release/net10.0-windows10.0.26100.0/win-x64/AmbystoLean.exe"
+      ],
+      "absent": "--fail-temp-reread"
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Everything that decides, measures or (phase B) moves; no UI. Contract: docs/spec/01-07 with their Windows notes and
+       intent/2026-10-16-lean-windows-v1.md. The public surface is the plan's "Public surface" table; the rest is internal. -->
+  <PropertyGroup>
+    <TargetFramework>net10.0-windows10.0.26100.0</TargetFramework>
+    <TargetPlatformMinVersion>10.0.26100.0</TargetPlatformMinVersion>
+    <SupportedOSPlatformVersion>10.0.26100.0</SupportedOSPlatformVersion>
+    <AssemblyName>Ambysto.Lean.Core</AssemblyName>
+    <RootNamespace>Ambysto.Lean.Core</RootNamespace>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- The Kit by released version only (intent Constraints). Ambysto.Kit.Safety joins in phase B, from windows-v0.2.0. -->
+    <PackageReference Include="Ambysto.Kit.License" Version="0.1.2" />
+    <!-- Phase B develops against the locally packed Kit (windows/KIT-LOCAL); the merge PR switches to 0.2.0 from the tag. -->
+    <PackageReference Include="Ambysto.Kit.Safety" Version="0.2.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="Ambysto.Lean.Core.Tests" />
+    <InternalsVisibleTo Include="AmbystoLean" />
+  </ItemGroup>
+</Project>

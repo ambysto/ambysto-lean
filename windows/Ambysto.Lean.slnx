@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Ambysto.Lean.Core/Ambysto.Lean.Core.csproj" />
+    <Project Path="src/Ambysto.Lean.App/Ambysto.Lean.App.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Ambysto.Lean.Core.Tests/Ambysto.Lean.Core.Tests.csproj" />
+    <Project Path="tests/Ambysto.Lean.UiTests/Ambysto.Lean.UiTests.csproj" />
+    <Project Path="tests/Ambysto.Lean.FakeTool/Ambysto.Lean.FakeTool.csproj" />
+  </Folder>
+</Solution>

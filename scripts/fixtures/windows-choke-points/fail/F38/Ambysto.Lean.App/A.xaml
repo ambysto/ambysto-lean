@@ -1,0 +1,8 @@
+// Tripwire fixture: not compiled.
+class F
+{
+    void M()
+    {
+        <Button Click="Kill" Tag="x" /> <!-- --> <TextBlock Text="{x:Bind m.Kill()}" />
+    }
+}

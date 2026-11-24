@@ -1,0 +1,400 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ambysto Lean: where did your disk go?</title>
+<meta name="description" content="Map your Mac's disk, find big, old and duplicate files, and move what you pick to the Trash. Every move is checked first and journaled, so you can put it back.">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#0b0b0c">
+<meta property="og:title" content="Ambysto Lean: where did your disk go?">
+<meta property="og:description" content="Map your disk. Find the big, old and duplicate files. Move them to the Trash with every safety check, and put them back if you were wrong.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="/img/overview-dark-lean.webp">
+<link rel="preload" href="fonts/jetbrains-mono-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/geist-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-1 -1 7 9' shape-rendering='crispEdges'%3E%3Crect x='-1' y='-1' width='7' height='9' fill='%230b0b0c'/%3E%3Cpath fill='%23e8e8e6' d='M1 0h3v1H1zM0 1h1v6H0zM4 1h1v6H4zM1 3h2v1H1z'/%3E%3Cpath fill='%233a3a3c' d='M3 3h1v1H3z'/%3E%3C/svg%3E">
+<style>
+@font-face {
+  font-family: "Geist"; font-style: normal; font-weight: 100 900; font-display: swap;
+  src: url(fonts/geist-latin.woff2) format("woff2");
+}
+@font-face {
+  font-family: "JetBrains Mono"; font-style: normal; font-weight: 100 800; font-display: swap;
+  src: url(fonts/jetbrains-mono-latin.woff2) format("woff2");
+}
+:root {
+  --bg: #0b0b0c;
+  --panel: #101011;
+  --ink: #e8e8e6;
+  --mute: #8a8a8c;
+  --rule: #222224;
+  --dim: #3a3a3c;
+  --sans: "Geist", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, monospace;
+}
+
+* { box-sizing: border-box; }
+html {
+  background: var(--bg);
+  color-scheme: dark;
+  scrollbar-color: var(--dim) var(--bg);
+  -webkit-text-size-adjust: 100%;
+}
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; }
+}
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 1.0625rem;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+::selection { background: var(--ink); color: var(--bg); }
+:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; border-radius: 4px; }
+a { color: inherit; text-decoration: none; }
+h1, h2, h3, p, ul, figure { margin: 0; padding: 0; }
+ul { list-style: none; }
+img { max-width: 100%; height: auto; display: block; }
+b { font-weight: 600; }
+.wrap { width: 100%; max-width: 1200px; margin-inline: auto; padding-inline: clamp(20px, 4vw, 48px); }
+
+/* tone: identity only, never status */
+.t-space { --tone: #f99a8f; }
+
+/* header */
+.top { position: sticky; top: 0; z-index: 20; background: var(--bg); border-bottom: 1px solid var(--rule); }
+.topbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 64px; padding-block: 10px; }
+.brandmark { display: inline-flex; align-items: center; gap: 0.7em; font-family: var(--mono); font-size: 15px; line-height: 1; flex: none; }
+.brandmark svg { height: 22px; width: auto; }
+.brandmark b { font-weight: 700; }
+.brandmark .co { color: var(--mute); }
+.brandmark .nm { color: var(--tone); font-weight: 700; }
+.topbar .note { text-align: right; }
+
+/* buttons */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  font-family: var(--mono); font-weight: 500; font-size: 0.875rem; line-height: 1;
+  padding: 14px 20px; border-radius: 6px; border: 1px solid var(--ink);
+  background: transparent; color: var(--ink); cursor: pointer;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
+.btn.primary { background: var(--ink); color: var(--bg); }
+.btn.primary:hover { background: #ffffff; border-color: #ffffff; }
+.btn[aria-disabled="true"] { opacity: 0.5; cursor: progress; }
+.btn.primary[aria-disabled="true"]:hover { background: var(--ink); border-color: var(--ink); }
+
+/* shared text */
+.leader { align-self: flex-end; height: 0.5em; margin-bottom: 0.3em; min-width: 24px; border-bottom: 2px dotted var(--dim); }
+.note { font-family: var(--mono); font-size: 0.75rem; color: var(--mute); }
+.actions { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 16px; margin-top: 36px; }
+.block { padding-block: clamp(56px, 8vw, 112px); border-top: 1px solid var(--rule); scroll-margin-top: 112px; }
+h2 { font-family: var(--mono); font-weight: 700; letter-spacing: -0.025em; line-height: 1.08; font-size: clamp(1.75rem, 3.4vw, 2.875rem); text-wrap: balance; }
+.lede { margin-top: 14px; max-width: 62ch; color: var(--mute); text-wrap: pretty; }
+.lede b { color: var(--ink); }
+.after { margin-top: 20px; }
+
+/* hero: the ledger */
+.hero { padding-top: clamp(40px, 7vw, 88px); padding-bottom: clamp(56px, 8vw, 104px); }
+.bar { display: block; width: 56px; height: 4px; margin-bottom: 22px; background: var(--tone); }
+.what { max-width: 52ch; margin-bottom: clamp(24px, 4vw, 44px); font-size: clamp(1.125rem, 1.7vw, 1.375rem); line-height: 1.45; text-wrap: pretty; }
+.what b { font-weight: 700; }
+.lg { display: grid; grid-template-columns: minmax(0, 1fr) auto; border-top: 1px solid var(--rule); }
+.say, .out { padding-block: clamp(14px, 2.2vw, 28px); border-bottom: 1px solid var(--rule); }
+.say {
+  grid-column: 1; display: flex; align-items: flex-end; gap: 20px;
+  font-family: var(--mono); font-weight: 700; line-height: 1; letter-spacing: -0.03em;
+  font-size: clamp(1.5rem, 4vw, 3.75rem);
+}
+.say::after { content: ""; flex: 1; align-self: flex-end; height: 0.5em; margin-bottom: 0.3em; min-width: 24px; border-bottom: 2px dotted var(--dim); }
+.out {
+  grid-column: 2; display: flex; align-items: flex-end; padding-left: 20px;
+  font-family: var(--mono); font-size: clamp(0.875rem, 1.2vw, 1.0625rem); line-height: 1.35; color: var(--mute);
+}
+@media (max-width: 719px) {
+  .lg { grid-template-columns: minmax(0, 1fr); }
+  .say { border-bottom: 0; padding-bottom: 6px; }
+  .say::after { display: none; }
+  .out { grid-column: 1; padding-left: 0; padding-top: 0; }
+}
+
+/* screenshots */
+.shot { background: var(--panel); border: 1px solid var(--rule); border-radius: 8px; overflow: hidden; }
+.hero .shot { margin-top: clamp(40px, 6vw, 72px); }
+
+/* problem */
+.problem p { max-width: 30em; font-size: clamp(1.25rem, 2.6vw, 1.75rem); line-height: 1.35; letter-spacing: -0.015em; text-wrap: pretty; }
+.problem p + p { margin-top: 18px; }
+.problem p.dim { color: var(--mute); }
+
+/* copy beside a screenshot */
+.split { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); gap: clamp(32px, 5vw, 64px); align-items: center; }
+.split.flip { grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr); }
+.split.flip .copy { order: 2; }
+@media (max-width: 899px) {
+  .split, .split.flip { grid-template-columns: minmax(0, 1fr); }
+  .split.flip .copy { order: 0; }
+}
+
+/* ledger rows: views, numbers, refusals */
+.rows { margin-top: 40px; border-top: 1px solid var(--rule); }
+.rows li { display: grid; grid-template-columns: minmax(0, max-content) minmax(24px, 1fr) minmax(0, 46ch); align-items: baseline; column-gap: 20px; padding-block: 18px; border-bottom: 1px solid var(--rule); }
+.rows .no { font-family: var(--mono); font-weight: 700; font-size: 1.0625rem; line-height: 1.3; font-variant-numeric: tabular-nums; }
+.rows .leader { align-self: start; margin-top: 0.4em; margin-bottom: 0; }
+.rows .why { color: var(--mute); }
+.rows.stats .leader { align-self: center; margin-top: 0; }
+.rows.stats .no { font-size: clamp(1.5rem, 3vw, 2.25rem); line-height: 1; letter-spacing: -0.03em; }
+@media (max-width: 859px) {
+  .rows li { grid-template-columns: minmax(0, 1fr); row-gap: 6px; }
+  .rows .leader { display: none; }
+}
+
+/* free and pro: one receipt */
+.receipt { max-width: 640px; margin-top: 40px; padding: clamp(20px, 3vw, 32px); background: var(--panel); border: 1px solid var(--rule); border-radius: 8px; }
+.receipt table { width: 100%; border-collapse: collapse; font-family: var(--mono); font-size: 0.8125rem; line-height: 1.4; }
+.receipt th, .receipt td { padding: 8px 12px 8px 0; text-align: left; vertical-align: baseline; font-weight: 400; }
+.receipt th:last-child, .receipt td:last-child { padding-right: 0; }
+.receipt thead th { padding-bottom: 14px; border-bottom: 1px dashed var(--dim); font-weight: 700; font-size: 1.125rem; }
+.receipt tbody tr:first-child td { padding-top: 14px; }
+.receipt td:first-child { color: var(--mute); }
+.receipt td.y { color: var(--ink); }
+.receipt td.n { color: var(--mute); }
+@media (max-width: 599px) {
+  .receipt tr { display: grid; grid-template-columns: 1fr 1fr; column-gap: 12px; }
+  .receipt thead th:first-child { display: none; }
+  .receipt tbody tr { padding-block: 10px; border-bottom: 1px solid var(--rule); }
+  .receipt tbody tr:first-child { padding-top: 14px; }
+  .receipt tbody tr:last-child { border-bottom: 0; padding-bottom: 0; }
+  .receipt tbody tr:first-child td { padding-top: 0; }
+  .receipt td { padding: 0; }
+  .receipt td:first-child { grid-column: 1 / -1; padding-bottom: 4px; }
+}
+
+/* questions */
+.faq { margin-top: 36px; border-top: 1px solid var(--rule); max-width: 760px; }
+.faq details { border-bottom: 1px solid var(--rule); }
+.faq summary { display: flex; justify-content: space-between; gap: 16px; padding-block: 18px; cursor: pointer; list-style: none; font-family: var(--mono); font-weight: 500; font-size: 1rem; }
+.faq summary::-webkit-details-marker { display: none; }
+.faq summary::after { content: "+"; color: var(--mute); }
+.faq details[open] summary::after { content: "\2212"; }
+.faq details p { padding-bottom: 20px; max-width: 62ch; color: var(--mute); }
+
+.foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; padding-block: 40px 56px; border-top: 1px solid var(--rule); }
+.foot p { font-family: var(--mono); font-size: 0.75rem; color: var(--mute); }
+.foot .org { display: flex; flex-direction: column; gap: 6px; }
+.foot nav { display: flex; flex-wrap: wrap; gap: 8px 20px; font-family: var(--mono); font-size: 0.75rem; color: var(--mute); }
+.foot nav a { text-decoration: none; }
+.foot nav a:hover { color: var(--ink); }
+.suite-line { margin-bottom: 14px; }
+.notice:empty { display: none; }
+.download .notice { margin-top: 14px; }
+.ticks { margin-top: 28px; border-top: 1px solid var(--rule); max-width: 62ch; }
+.ticks li { display: flex; gap: 14px; align-items: baseline; padding-block: 10px; border-bottom: 1px solid var(--rule); font-size: 0.9375rem; color: var(--mute); }
+.ticks li::before { content: ""; flex: none; width: 6px; height: 10px; background: var(--tone, var(--ink)); transform: translateY(1px); }
+.ticks li > span { min-width: 0; }
+.ticks strong { font-family: var(--mono); font-weight: 500; font-size: 0.875rem; color: var(--ink); }
+.suite-line a, .foot a, .note a { text-decoration: underline; text-underline-offset: 3px; }
+</style>
+</head>
+<body class="t-space">
+
+<header class="top">
+  <div class="wrap topbar">
+    <a class="brandmark" href="/">
+      <svg viewBox="0 0 5 7" aria-hidden="true" shape-rendering="crispEdges"><path fill="#e8e8e6" d="M1.04 .04h.92v.92h-.92zM2.04 .04h.92v.92h-.92zM3.04 .04h.92v.92h-.92zM.04 1.04h.92v.92h-.92zM4.04 1.04h.92v.92h-.92zM.04 2.04h.92v.92h-.92zM4.04 2.04h.92v.92h-.92zM.04 3.04h.92v.92h-.92zM1.04 3.04h.92v.92h-.92zM2.04 3.04h.92v.92h-.92zM4.04 3.04h.92v.92h-.92zM.04 4.04h.92v.92h-.92zM4.04 4.04h.92v.92h-.92zM.04 5.04h.92v.92h-.92zM4.04 5.04h.92v.92h-.92zM.04 6.04h.92v.92h-.92zM4.04 6.04h.92v.92h-.92z"/><path fill="#3a3a3c" d="M3.04 3.04h.92v.92h-.92z"/></svg>
+      <span><span class="co">Ambysto</span> <span class="nm">Lean</span></span>
+    </a>
+    <span class="note">macOS 14+, Apple Silicon and Intel</span>
+  </div>
+</header>
+
+<main>
+  <section class="wrap hero" aria-label="Ambysto Lean">
+    <span class="bar" aria-hidden="true"></span>
+    <p class="note suite-line">Part of the <a href="https://suite.ambysto.com">Ambysto Pro Suite</a>, the jet-pack for every vibeworker</p>
+    <p class="what">Lean maps your disk, finds the files that cost the most, and moves what <b>you</b> pick to the Trash. Every move is checked first and written down, so you can put it back.</p>
+    <div class="lg">
+      <h1 class="say">Where did your disk go?</h1>
+      <p class="out">For Mac and Windows. Free.</p>
+    </div>
+    <div class="actions">
+      <a class="btn primary" href="#download">Download for macOS</a>
+      <a class="btn ghost" href="https://github.com/ambysto/ambysto-downloads/releases/download/windows-v0.1.1/AmbystoLean-b951376-x64.msi">Download for Windows</a>
+      <a class="btn ghost" href="https://suite.ambysto.com">See the Suite</a>
+    </div>
+    <figure class="shot">
+      <img src="img/overview-dark-lean.webp" width="1800" height="1160" alt="Ambysto Lean overview: used, free and available space on the disk, and the biggest folders ranked by size">
+    </figure>
+  </section>
+
+  <section class="wrap block problem">
+    <p>Finder shows one folder at a time. Apple's Storage pane files the rest under "System Data".</p>
+    <p>So you find a 40 GB folder and leave it alone. Is it in use? Is there another copy? How do you get it back if you're wrong?</p>
+    <p class="dim">Lean answers those before you delete anything.</p>
+  </section>
+
+  <section class="wrap block" aria-labelledby="views-title">
+    <h2 id="views-title">Four views. One safety gate.</h2>
+    <p class="lede">Every view ends in the same place: you tick rows, Lean checks them, they go to the Trash.</p>
+    <ul class="rows">
+      <li><h3 class="no">Map</h3><span class="leader" aria-hidden="true"></span><p class="why">Your whole disk as a treemap. Sizes are what files really take on disk. Folders it can't read get their own tile instead of being skipped quietly.</p></li>
+      <li><h3 class="no">Large and old</h3><span class="leader" aria-hidden="true"></span><p class="why">Filter by size and by when you last used a file. It tells you whether the date comes from Spotlight or from the file itself. Nothing is pre-ticked.</p></li>
+      <li><h3 class="no">Duplicates</h3><span class="leader" aria-hidden="true"></span><p class="why">Byte-identical files only. Compared byte by byte, never by hash or size alone. Lean suggests the newest copy to keep and selects nothing.</p></li>
+      <li><h3 class="no">Uninstall</h3><span class="leader" aria-hidden="true"></span><p class="why">An app and its leftovers in Library, matched by exact bundle ID. "Arc" will never pull in files from "Archive Utility".</p></li>
+    </ul>
+  </section>
+
+  <section class="wrap block" aria-labelledby="map-title">
+    <div class="split">
+      <div class="copy">
+        <h2 id="map-title">See the 50&nbsp;GB folder.</h2>
+        <p class="lede">Big tiles are big files. Click in, right-click to act.</p>
+        <p class="lede"><b>The map is progressive.</b> Tiles appear in the first second and sharpen as the scan goes on. Cancel any time.</p>
+      </div>
+      <figure class="shot">
+        <img src="img/map-dark.webp" width="1800" height="1174" loading="lazy" alt="Treemap of a Mac disk: a single 50 GB folder in Library dominates, next to the Applications folder">
+      </figure>
+    </div>
+  </section>
+
+  <section class="wrap block" aria-labelledby="uninstall-title">
+    <div class="split flip">
+      <div class="copy">
+        <h2 id="uninstall-title">Delete the app. Then the rest of it.</h2>
+        <p class="lede">Telegram is 364 MB. Its leftovers are another 3.5 GB. Lean lists each one with its size.</p>
+        <p class="lede"><b>Only the app is ticked.</b> Leftovers are your call. A running app is blocked until you quit it.</p>
+      </div>
+      <figure class="shot">
+        <img src="img/uninstall-dark-lean.webp" width="1800" height="885" loading="lazy" alt="Uninstall view for Telegram: the app ticked, with unticked leftovers listed by folder and size">
+      </figure>
+    </div>
+  </section>
+
+  <section class="wrap block" aria-labelledby="numbers-title">
+    <h2 id="numbers-title">It says what it didn't measure.</h2>
+    <p class="lede">"Measured 144.0 GB of 156.4 GB used. Not measured: 12.4 GB." Snapshots, system data and 259 unreadable items are named, not hidden in a total.</p>
+    <ul class="rows stats">
+      <li><span class="no">1.66M</span><span class="leader" aria-hidden="true"></span><span class="why">files scanned on a real Mac, whole disk</span></li>
+      <li><span class="no">12 s</span><span class="leader" aria-hidden="true"></span><span class="why">to scan them. First tiles after 0.06 s.</span></li>
+      <li><span class="no">356 MB</span><span class="leader" aria-hidden="true"></span><span class="why">peak memory during that scan</span></li>
+    </ul>
+    <p class="note after">Development build, warm cache. Your disk and your cache will differ.</p>
+  </section>
+
+  <section class="wrap block" aria-labelledby="safety-title">
+    <h2 id="safety-title">What Lean will not do.</h2>
+    <p class="lede">The rules are in the spec, not in a settings screen. An update never turns a destructive option on.</p>
+    <ul class="rows">
+      <li><span class="no">No permanent delete.</span><span class="leader" aria-hidden="true"></span><span class="why">Everything goes to the Trash. Put back restores it from the journal.</span></li>
+      <li><span class="no">No guessing at delete time.</span><span class="leader" aria-hidden="true"></span><span class="why">Path resolved, symlinks not followed, size measured again right before the move.</span></li>
+      <li><span class="no">No deleting what's in use.</span><span class="leader" aria-hidden="true"></span><span class="why">If a process has the file open, it's skipped and the process is named.</span></li>
+      <li><span class="no">No touching what matters.</span><span class="leader" aria-hidden="true"></span><span class="why">Photos libraries, Mail, Messages, keychains, iCloud Drive, ~/.ssh, Time Machine and system folders can't be selected.</span></li>
+      <li><span class="no">No password prompts.</span><span class="leader" aria-hidden="true"></span><span class="why">Items that need admin rights are shown with their size and marked "remove in Finder".</span></li>
+      <li><span class="no">No uploads.</span><span class="leader" aria-hidden="true"></span><span class="why">Scans, journal and everything else stay on your Mac. No telemetry.</span></li>
+    </ul>
+  </section>
+
+  <section class="wrap block" aria-labelledby="price-title">
+    <h2 id="price-title">Free is the whole app.</h2>
+    <p class="lede">Reclaiming disk space is never held hostage. Free cleans everything safely. We only charge when you are happy to pay.</p>
+    <div class="receipt">
+      <table>
+        <thead><tr><th></th><th>Free · $0</th><th>Pro · $19.99</th></tr></thead>
+        <tbody>
+          <tr><td>Map, large and old, duplicates, uninstall</td><td class="y">Yes</td><td class="y">Yes</td></tr>
+          <tr><td>Move to Trash with every safety check</td><td class="y">Yes</td><td class="y">Yes</td></tr>
+          <tr><td>Journal and Put back</td><td class="n">Last 30 days shown</td><td class="y">Everything</td></tr>
+          <tr><td>Export report and journal (Markdown, JSON)</td><td class="n">No</td><td class="y">Yes</td></tr>
+          <tr><td>Low-disk alert</td><td class="n">No</td><td class="y">Yes</td></tr>
+          <tr><td>Purchase reminder</td><td class="n">Rare banner</td><td class="y">None</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="note after">Pro adds conveniences, nothing you need to finish the job. One key, verified offline, no subscription. Only pay if Lean brought you peace of mind and you want to support independent development.</p>
+    <p class="note after"><a href="/refund-policy">Full refund within 14 days of purchase</a></p>
+  </section>
+
+  <section class="wrap block" aria-labelledby="questions-title">
+    <h2 id="questions-title">Fair ones.</h2>
+    <div class="faq">
+      <details>
+        <summary>Why does it need Full Disk Access?</summary>
+        <p>Without it, macOS hides folders from the scan and the numbers would be wrong. Lean asks once, explains why, opens the right Settings pane and notices the grant by itself. It reads your disk on this Mac and never uploads anything.</p>
+      </details>
+      <details>
+        <summary>Will it free my purgeable space?</summary>
+        <p>No, and it doesn't count it as savings. macOS releases purgeable space itself when it needs it. Lean shows it so the numbers add up.</p>
+      </details>
+      <details>
+        <summary>Disk space didn't change after I deleted something.</summary>
+        <p>Lean moves files to the Trash, and the space returns when you empty it. It says so after every move, and shows the size it measured just before moving.</p>
+      </details>
+      <details>
+        <summary>Do APFS clones free less than the duplicates list says?</summary>
+        <p>They can. Lean marks those copies "may share storage; moving it may free less" instead of promising a number.</p>
+      </details>
+      <details>
+        <summary>Windows?</summary>
+        <p>Yes, as a preview for Windows 11 24H2 or later (x64), built from the same written spec as the Mac app. Like the Mac app, it moves items to the Recycle Bin and can put them back. No mobile.</p>
+      </details>
+    </div>
+  </section>
+
+  <section id="download" class="wrap block download" aria-labelledby="download-title">
+    <h2 id="download-title">Know before you delete.</h2>
+    <p class="lede">On a Mac, open the disk image and drag Lean to Applications. On Windows, run the installer.</p>
+    <div class="actions">
+      <a class="btn primary" id="get" href="download/AmbystoLean.dmg" download aria-describedby="get-notice">Download for macOS</a>
+      <p class="note">Version 1.1.2 · macOS 14+ · Apple Silicon and Intel · Free</p>
+    </div>
+    <div class="actions">
+      <a class="btn ghost" id="get-win" href="https://github.com/ambysto/ambysto-downloads/releases/download/windows-v0.1.1/AmbystoLean-b951376-x64.msi" aria-describedby="get-notice">Download for Windows</a>
+      <p class="note">Preview · Windows 11 24H2+ · x64 · Free</p>
+    </div>
+    <p class="note notice" id="get-notice" role="status"></p>
+    <ul class="ticks">
+      <li><span><strong>Tester build.</strong> Not notarized by Apple yet, so the first launch is blocked with "Apple could not verify".</span></li>
+      <li><span><strong>To open it once:</strong> System Settings → Privacy &amp; Security, then <strong>Open Anyway</strong> next to Ambysto Lean.</span></li>
+      <li><span><strong>Windows preview.</strong> Not code-signed yet, so SmartScreen may warn on the first run: choose <strong>More info</strong>, then <strong>Run anyway</strong>. It installs for your user, no admin needed.</span></li>
+    </ul>
+  </section>
+</main>
+
+<footer class="wrap foot">
+  <div class="org">
+    <p>Part of the <a href="https://suite.ambysto.com">Ambysto Pro Suite</a>, the jet-pack for every vibeworker.</p>
+    <p>(c) Ambysto 2026 · <a href="mailto:contact@ambysto.com">contact@ambysto.com</a></p>
+  </div>
+  <nav aria-label="Legal">
+    <a href="/terms">Terms of Service</a>
+    <a href="/privacy-policy">Privacy Policy</a>
+    <a href="/refund-policy">Refund Policy</a>
+    <a href="https://ambysto.com">ambysto.com</a>
+  </nav>
+</footer>
+
+<script>
+// Download: if the disk image or installer is not on the server, say so instead of a 404.
+['get', 'get-win'].forEach(function (id) { document.getElementById(id).addEventListener('click', function (e) {
+  var a = this;
+  if (a.dataset.ok) return;
+  e.preventDefault();
+  fetch(a.href, { method: 'HEAD' }).then(function (r) {
+    if (!r.ok) throw 0;
+    a.dataset.ok = '1';
+    a.click();
+  }).catch(function () {
+    document.getElementById('get-notice').textContent = 'The download is being updated. Please try again shortly.';
+  });
+}); });
+</script>
+
+</body>
+</html>

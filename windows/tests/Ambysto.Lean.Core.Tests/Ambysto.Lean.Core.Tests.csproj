@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- MSTest (Microsoft's own). The acceptance tests of plan groups 3 and 9, written from docs/spec, the intent and the
+       plan before each implementation, plus unit tests. Fixtures are real files in temp folders or the test-data folder;
+       every setting a test changes is restored. -->
+  <PropertyGroup>
+    <TargetFramework>net10.0-windows10.0.26100.0</TargetFramework>
+    <SupportedOSPlatformVersion>10.0.26100.0</SupportedOSPlatformVersion>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+    <RootNamespace>Ambysto.Lean.Core.Tests</RootNamespace>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="MSTest" Version="4.4.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../src/Ambysto.Lean.Core/Ambysto.Lean.Core.csproj" />
+  </ItemGroup>
+  <!-- ASP-33: the tests of the four Pro features live with the private module and are compiled in only when it is present. -->
+  <ItemGroup Condition="'$(LeanPro)' == 'true'">
+    <ProjectReference Include="../../pro/Ambysto.Lean.Pro/Ambysto.Lean.Pro.csproj" />
+    <Compile Include="../../pro/tests/*.cs" LinkBase="Pro" />
+  </ItemGroup>
+  <PropertyGroup Condition="'$(LeanPro)' == 'true'">
+    <DefineConstants>$(DefineConstants);LEAN_PRO</DefineConstants>
+  </PropertyGroup>
+</Project>

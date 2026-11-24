@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- ASP-20 phase B: a stand-in for uv.exe, so the UI tests of Apps and caches never run a real tool's clean. The UI tests copy
+       its output (uv.exe, uv.dll, uv.runtimeconfig.json) into a temp folder that comes first on the app's PATH. No packages.
+       Environment: LEAN_FAKETOOL_LOG (a file; one line per call: its arguments), LEAN_FAKETOOL_CACHE (the folder "cache dir"
+       prints and "cache clean" empties), LEAN_FAKETOOL_EXIT (exit code of every call but "cache dir"; with it set, nothing
+       is deleted), LEAN_FAKETOOL_CACHE_PIP (the same for a copy run as python.exe, which plays pip), LEAN_FAKETOOL_SLEEP_MS (wait before every call but "cache dir"; a call with no arguments sleeps too). -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <AssemblyName>uv</AssemblyName>
+    <RootNamespace>Ambysto.Lean.FakeTool</RootNamespace>
+    <UseAppHost>true</UseAppHost>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+</Project>

@@ -1,0 +1,5 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <PackageReference Include="Ambysto.Kit.Safety" Version="0.2.0-local.403372b" />
+  </ItemGroup>
+</Project>

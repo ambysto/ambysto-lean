@@ -1,0 +1,16 @@
+.build/
+dist/
+.DS_Store
+macos/.build/
+spike/.build/
+/fixtures/
+macos/fixtures/
+.vercel/
+.claude/settings.local.json
+CLAUDE.local.md
+*.o
+.claude/worktrees/
+windows/**/bin/
+windows/**/obj/
+windows/**/TestResults/
+windows/**/StrykerOutput/

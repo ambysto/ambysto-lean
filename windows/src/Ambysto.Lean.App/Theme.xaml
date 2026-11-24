@@ -1,0 +1,964 @@
+<!-- ASP-12, intent/2026-10-18-asp-12-brand-theme.md: the suite's "Printed Readout" look. The one place that names a colour (besides the
+     BrandPalette class, which reads these and adds the map's tones). Dark only. The theme dictionary overrides the WinUI brushes the
+     controls use, from the seven frame colours. WinUI's own dark dictionary is the one keyed "Default" (it has no "Dark" key: a
+     dictionary keyed "Dark" is never read, measured 2026-10-18), so the dark overrides are keyed "Default" and the window content
+     and the dialogs set RequestedTheme="Dark". "HighContrast" is empty on purpose, so every control uses the system's colours. -->
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <!-- The seven frame colours. -->
+  <Color x:Key="LeanGround">#0b0b0c</Color>
+  <Color x:Key="LeanPanel">#101011</Color>
+  <Color x:Key="LeanInk">#e8e8e6</Color>
+  <Color x:Key="LeanMute">#8a8a8c</Color>
+  <Color x:Key="LeanRule">#38383d</Color>
+  <Color x:Key="LeanDim">#4a4a50</Color>
+  <Color x:Key="LeanDivider">#68686e</Color>
+  <Color x:Key="LeanTone">#f99a8f</Color>
+  <!-- The list selection and hover fill, and the primary button's hover fill. -->
+  <Color x:Key="LeanSelection">#1a1a1b</Color>
+  <!-- ASP-15 (owner 2026-10-19): the sidebar's own tone, one step lighter than the panel, so it reads apart from the content. -->
+  <Color x:Key="LeanSidebar">#161618</Color>
+  <Color x:Key="LeanWhite">#ffffff</Color>
+  <!-- ASP-22: the band of every other table column, a faint white over the ground (translucent, so a row's hover and selection show through). -->
+  <Color x:Key="LeanBand">#14ffffff</Color>
+
+  <SolidColorBrush x:Key="LeanGroundBrush" Color="{StaticResource LeanGround}" />
+  <SolidColorBrush x:Key="LeanPanelBrush" Color="{StaticResource LeanPanel}" />
+  <SolidColorBrush x:Key="LeanInkBrush" Color="{StaticResource LeanInk}" />
+  <SolidColorBrush x:Key="LeanMuteBrush" Color="{StaticResource LeanMute}" />
+  <SolidColorBrush x:Key="LeanRuleBrush" Color="{StaticResource LeanRule}" />
+  <SolidColorBrush x:Key="LeanDimBrush" Color="{StaticResource LeanDim}" />
+  <SolidColorBrush x:Key="LeanDividerBrush" Color="{StaticResource LeanDivider}" />
+  <SolidColorBrush x:Key="LeanToneBrush" Color="{StaticResource LeanTone}" />
+  <SolidColorBrush x:Key="LeanSelectionBrush" Color="{StaticResource LeanSelection}" />
+  <SolidColorBrush x:Key="LeanSidebarBrush" Color="{StaticResource LeanSidebar}" />
+  <SolidColorBrush x:Key="LeanWhiteBrush" Color="{StaticResource LeanWhite}" />
+  <SolidColorBrush x:Key="LeanBandBrush" Color="{StaticResource LeanBand}" />
+  <SolidColorBrush x:Key="LeanClearBrush" Color="Transparent" />
+  <SolidColorBrush x:Key="LeanSmokeBrush" Color="{StaticResource LeanGround}" Opacity="0.8" />
+
+  <!-- Type: the bundled fonts, loaded from the app folder (Assets/Fonts/, copied next to the exe and into the install folder). Each face is
+       named by its file: a folder form (ms-appx:///Assets/Fonts/#family) and a list of faces under one family do not load in this
+       unpackaged app (measured 2026-10-18), so a weight is a family of its own. -->
+  <FontFamily x:Key="LeanMono">ms-appx:///Assets/Fonts/JetBrainsMono-Regular.ttf#JetBrains Mono</FontFamily>
+  <FontFamily x:Key="LeanMonoMedium">ms-appx:///Assets/Fonts/JetBrainsMono-Medium.ttf#JetBrains Mono</FontFamily>
+  <FontFamily x:Key="LeanMonoBold">ms-appx:///Assets/Fonts/JetBrainsMono-Bold.ttf#JetBrains Mono</FontFamily>
+  <FontFamily x:Key="LeanSans">ms-appx:///Assets/Fonts/Geist-Regular.ttf#Geist</FontFamily>
+  <FontFamily x:Key="LeanSansMedium">ms-appx:///Assets/Fonts/Geist-Medium.ttf#Geist</FontFamily>
+  <StaticResource x:Key="ContentControlThemeFontFamily" ResourceKey="LeanMono" />
+
+  <!-- Shape: buttons and fields 6, panels and dialogs 8. -->
+  <CornerRadius x:Key="ControlCornerRadius">6</CornerRadius>
+  <CornerRadius x:Key="OverlayCornerRadius">8</CornerRadius>
+  <Thickness x:Key="FocusVisualPrimaryThickness">2</Thickness>
+  <Thickness x:Key="FocusVisualSecondaryThickness">1</Thickness>
+
+
+  <!-- Styles. Text uses LeanMono by default; LeanSentence (Geist) is the only way a text gets the sans face. -->
+  <Style TargetType="TextBlock">
+    <Setter Property="FontFamily" Value="{StaticResource LeanMono}" />
+  </Style>
+
+  <Style x:Key="LeanTitle" TargetType="TextBlock">
+    <Setter Property="FontFamily" Value="{StaticResource LeanMonoMedium}" />
+    <Setter Property="FontWeight" Value="Medium" />
+    <Setter Property="FontSize" Value="20" />
+  </Style>
+  <Style x:Key="LeanData" TargetType="TextBlock">
+    <Setter Property="FontFamily" Value="{StaticResource LeanMono}" />
+    <Setter Property="FontWeight" Value="Normal" />
+    <Setter Property="FontSize" Value="14" />
+  </Style>
+  <Style x:Key="LeanLabel" TargetType="TextBlock">
+    <Setter Property="FontFamily" Value="{StaticResource LeanMono}" />
+    <Setter Property="FontWeight" Value="Normal" />
+    <Setter Property="FontSize" Value="12" />
+  </Style>
+  <!-- A name in a list or a heading: the medium face at the text's own size. -->
+  <Style x:Key="LeanMedium" TargetType="TextBlock">
+    <Setter Property="FontFamily" Value="{StaticResource LeanMonoMedium}" />
+    <Setter Property="FontWeight" Value="Medium" />
+  </Style>
+  <!-- A label in the mute colour (notes, hints, "Pro" tags). -->
+  <Style x:Key="LeanNote" TargetType="TextBlock" BasedOn="{StaticResource LeanLabel}">
+    <Setter Property="Foreground" Value="{ThemeResource TextFillColorSecondaryBrush}" />
+  </Style>
+  <!-- Secondary corner sticker badge for Pro-gated features (perched on the top-right edge of a control). -->
+  <SolidColorBrush x:Key="LeanProStickerFillBrush" Color="#F5B841" />
+  <SolidColorBrush x:Key="LeanSuggestHoverBrush" Color="#FFB4AA" />
+  <SolidColorBrush x:Key="LeanSuggestBorderBrush" Color="#FFC2BA" />
+  <Style x:Key="LeanProBadge" TargetType="Border">
+    <Setter Property="Background" Value="{StaticResource LeanProStickerFillBrush}" />
+    <Setter Property="BorderBrush" Value="{ThemeResource SolidBackgroundFillColorBaseBrush}" />
+    <Setter Property="BorderThickness" Value="1.5" />
+    <Setter Property="CornerRadius" Value="3" />
+    <Setter Property="Padding" Value="4,1,4,1" />
+    <Setter Property="HorizontalAlignment" Value="Right" />
+    <Setter Property="VerticalAlignment" Value="Top" />
+    <Setter Property="Margin" Value="0,-6,-8,0" />
+    <Setter Property="Canvas.ZIndex" Value="2" />
+    <Setter Property="IsHitTestVisible" Value="False" />
+  </Style>
+  <Style x:Key="LeanProSticker" TargetType="TextBlock">
+    <Setter Property="FontFamily" Value="{StaticResource LeanMonoMedium}" />
+    <Setter Property="FontWeight" Value="Bold" />
+    <Setter Property="FontSize" Value="9.5" />
+    <Setter Property="LineHeight" Value="11" />
+    <Setter Property="CharacterSpacing" Value="40" />
+    <Setter Property="Foreground" Value="{ThemeResource SolidBackgroundFillColorBaseBrush}" />
+    <Setter Property="VerticalAlignment" Value="Center" />
+    <Setter Property="HorizontalAlignment" Value="Center" />
+  </Style>
+  <Style x:Key="LeanSentence" TargetType="TextBlock">
+    <Setter Property="FontFamily" Value="{StaticResource LeanSans}" />
+    <Setter Property="FontWeight" Value="Normal" />
+    <Setter Property="FontSize" Value="15" />
+    <Setter Property="Foreground" Value="{ThemeResource TextFillColorSecondaryBrush}" />
+  </Style>
+  <!-- A cell of a display-only row. -->
+  <Style x:Key="LeanMuteText" TargetType="TextBlock">
+    <Setter Property="FontFamily" Value="{StaticResource LeanMono}" />
+    <Setter Property="Foreground" Value="{ThemeResource TextFillColorSecondaryBrush}" />
+  </Style>
+
+  <!-- Buttons (ASP-12). Why they carry their own setters and template (measured 2026-10-18): a style that only inherits from the
+       framework's default button style resolves its theme brushes in the framework's dictionary, so the overrides below never
+       reach it (the buttons drew WinUI's own fill and elevation border). Setters and a template declared here resolve them in this
+       dictionary. They use WinUI's own key names (ButtonBackground, AccentButtonBackground and their states), which the
+       framework's HighContrast dictionary also defines, so under High Contrast the system's colours show.
+       Ghost (the implicit style): transparent, a 1px dim border, ink text; mute border on hover; a rule border and mute text when
+       disabled. Primary (LeanPrimaryButton): ink fill and ground text, white on hover; the one main action of a view. -->
+  <Style TargetType="Button" BasedOn="{StaticResource DefaultButtonStyle}">
+    <Setter Property="Background" Value="{ThemeResource ButtonBackground}" />
+    <Setter Property="Foreground" Value="{ThemeResource ButtonForeground}" />
+    <Setter Property="BorderBrush" Value="{ThemeResource ButtonBorderBrush}" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="Button">
+        <ContentPresenter x:Name="ContentPresenter" Background="{TemplateBinding Background}" Foreground="{TemplateBinding Foreground}"
+                          BackgroundSizing="{TemplateBinding BackgroundSizing}" BorderBrush="{TemplateBinding BorderBrush}"
+                          BorderThickness="{TemplateBinding BorderThickness}" Content="{TemplateBinding Content}"
+                          ContentTemplate="{TemplateBinding ContentTemplate}" ContentTransitions="{TemplateBinding ContentTransitions}"
+                          CornerRadius="{TemplateBinding CornerRadius}" Padding="{TemplateBinding Padding}"
+                          HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                          VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}" AutomationProperties.AccessibilityView="Raw">
+          <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup x:Name="CommonStates">
+              <VisualState x:Name="Normal" />
+              <VisualState x:Name="PointerOver">
+                <VisualState.Setters>
+                  <Setter Target="ContentPresenter.Background" Value="{ThemeResource ButtonBackgroundPointerOver}" />
+                  <Setter Target="ContentPresenter.BorderBrush" Value="{ThemeResource ButtonBorderBrushPointerOver}" />
+                  <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource ButtonForegroundPointerOver}" />
+                </VisualState.Setters>
+              </VisualState>
+              <VisualState x:Name="Pressed">
+                <VisualState.Setters>
+                  <Setter Target="ContentPresenter.Background" Value="{ThemeResource ButtonBackgroundPressed}" />
+                  <Setter Target="ContentPresenter.BorderBrush" Value="{ThemeResource ButtonBorderBrushPressed}" />
+                  <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource ButtonForegroundPressed}" />
+                </VisualState.Setters>
+              </VisualState>
+              <VisualState x:Name="Disabled">
+                <VisualState.Setters>
+                  <Setter Target="ContentPresenter.Background" Value="{ThemeResource ButtonBackgroundDisabled}" />
+                  <Setter Target="ContentPresenter.BorderBrush" Value="{ThemeResource ButtonBorderBrushDisabled}" />
+                  <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource ButtonForegroundDisabled}" />
+                </VisualState.Setters>
+              </VisualState>
+            </VisualStateGroup>
+          </VisualStateManager.VisualStateGroups>
+        </ContentPresenter>
+      </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+  <Style x:Key="LeanPrimaryButton" TargetType="Button" BasedOn="{StaticResource DefaultButtonStyle}">
+    <Setter Property="Background" Value="{ThemeResource AccentButtonBackground}" />
+    <Setter Property="Foreground" Value="{ThemeResource AccentButtonForeground}" />
+    <Setter Property="BorderBrush" Value="{ThemeResource AccentButtonBorderBrush}" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="Button">
+        <ContentPresenter x:Name="ContentPresenter" Background="{TemplateBinding Background}" Foreground="{TemplateBinding Foreground}"
+                          BackgroundSizing="{TemplateBinding BackgroundSizing}" BorderBrush="{TemplateBinding BorderBrush}"
+                          BorderThickness="{TemplateBinding BorderThickness}" Content="{TemplateBinding Content}"
+                          ContentTemplate="{TemplateBinding ContentTemplate}" ContentTransitions="{TemplateBinding ContentTransitions}"
+                          CornerRadius="{TemplateBinding CornerRadius}" Padding="{TemplateBinding Padding}"
+                          HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                          VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}" AutomationProperties.AccessibilityView="Raw">
+          <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup x:Name="CommonStates">
+              <VisualState x:Name="Normal" />
+              <VisualState x:Name="PointerOver">
+                <VisualState.Setters>
+                  <Setter Target="ContentPresenter.Background" Value="{ThemeResource AccentButtonBackgroundPointerOver}" />
+                  <Setter Target="ContentPresenter.BorderBrush" Value="{ThemeResource AccentButtonBorderBrushPointerOver}" />
+                  <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource AccentButtonForegroundPointerOver}" />
+                </VisualState.Setters>
+              </VisualState>
+              <VisualState x:Name="Pressed">
+                <VisualState.Setters>
+                  <Setter Target="ContentPresenter.Background" Value="{ThemeResource AccentButtonBackgroundPressed}" />
+                  <Setter Target="ContentPresenter.BorderBrush" Value="{ThemeResource AccentButtonBorderBrushPressed}" />
+                  <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource AccentButtonForegroundPressed}" />
+                </VisualState.Setters>
+              </VisualState>
+              <VisualState x:Name="Disabled">
+                <VisualState.Setters>
+                  <Setter Target="ContentPresenter.Background" Value="{ThemeResource AccentButtonBackgroundDisabled}" />
+                  <Setter Target="ContentPresenter.BorderBrush" Value="{ThemeResource AccentButtonBorderBrushDisabled}" />
+                  <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource AccentButtonForegroundDisabled}" />
+                </VisualState.Setters>
+              </VisualState>
+            </VisualStateGroup>
+          </VisualStateManager.VisualStateGroups>
+        </ContentPresenter>
+      </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+  <!-- Suggest / featured Pro action button: lit in vibrant LeanTone (#F99A8F) with dark bold text even in Free mode so users want to try it. -->
+  <Style x:Key="LeanSuggestButton" TargetType="Button" BasedOn="{StaticResource DefaultButtonStyle}">
+    <Setter Property="Background" Value="{StaticResource LeanToneBrush}" />
+    <Setter Property="Foreground" Value="{ThemeResource SolidBackgroundFillColorBaseBrush}" />
+    <Setter Property="BorderBrush" Value="{StaticResource LeanSuggestBorderBrush}" />
+    <Setter Property="FontFamily" Value="{StaticResource LeanMonoMedium}" />
+    <Setter Property="FontWeight" Value="Bold" />
+    <Setter Property="Padding" Value="14,5,22,6" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="Button">
+        <ContentPresenter x:Name="ContentPresenter" Background="{TemplateBinding Background}" Foreground="{TemplateBinding Foreground}"
+                          BackgroundSizing="{TemplateBinding BackgroundSizing}" BorderBrush="{TemplateBinding BorderBrush}"
+                          BorderThickness="{TemplateBinding BorderThickness}" Content="{TemplateBinding Content}"
+                          ContentTemplate="{TemplateBinding ContentTemplate}" ContentTransitions="{TemplateBinding ContentTransitions}"
+                          CornerRadius="{TemplateBinding CornerRadius}" Padding="{TemplateBinding Padding}"
+                          HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                          VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}" AutomationProperties.AccessibilityView="Raw">
+          <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup x:Name="CommonStates">
+              <VisualState x:Name="Normal" />
+              <VisualState x:Name="PointerOver">
+                <VisualState.Setters>
+                  <Setter Target="ContentPresenter.Background" Value="{StaticResource LeanSuggestHoverBrush}" />
+                  <Setter Target="ContentPresenter.BorderBrush" Value="{StaticResource LeanSuggestBorderBrush}" />
+                  <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource SolidBackgroundFillColorBaseBrush}" />
+                </VisualState.Setters>
+              </VisualState>
+              <VisualState x:Name="Pressed">
+                <VisualState.Setters>
+                  <Setter Target="ContentPresenter.Background" Value="{StaticResource LeanToneBrush}" />
+                  <Setter Target="ContentPresenter.BorderBrush" Value="{StaticResource LeanSuggestBorderBrush}" />
+                  <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource SolidBackgroundFillColorBaseBrush}" />
+                </VisualState.Setters>
+              </VisualState>
+              <VisualState x:Name="Disabled">
+                <VisualState.Setters>
+                  <Setter Target="ContentPresenter.Background" Value="{StaticResource LeanToneBrush}" />
+                  <Setter Target="ContentPresenter.BorderBrush" Value="{StaticResource LeanSuggestBorderBrush}" />
+                  <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource SolidBackgroundFillColorBaseBrush}" />
+                </VisualState.Setters>
+              </VisualState>
+            </VisualStateGroup>
+          </VisualStateManager.VisualStateGroups>
+        </ContentPresenter>
+      </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+  <!-- The accent style a dialog gives its default button is the ghost style too: the dialog's move button is the only primary one,
+       and Cancel (the default button, so Enter cancels) is told apart by its focus ring. -->
+  <Style x:Key="AccentButtonStyle" TargetType="Button" BasedOn="{StaticResource DefaultButtonStyle}">
+    <Setter Property="Background" Value="{ThemeResource ButtonBackground}" />
+    <Setter Property="Foreground" Value="{ThemeResource ButtonForeground}" />
+    <Setter Property="BorderBrush" Value="{ThemeResource ButtonBorderBrush}" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="Button">
+        <ContentPresenter x:Name="ContentPresenter" Background="{TemplateBinding Background}" Foreground="{TemplateBinding Foreground}"
+                          BackgroundSizing="{TemplateBinding BackgroundSizing}" BorderBrush="{TemplateBinding BorderBrush}"
+                          BorderThickness="{TemplateBinding BorderThickness}" Content="{TemplateBinding Content}"
+                          ContentTemplate="{TemplateBinding ContentTemplate}" ContentTransitions="{TemplateBinding ContentTransitions}"
+                          CornerRadius="{TemplateBinding CornerRadius}" Padding="{TemplateBinding Padding}"
+                          HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                          VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}" AutomationProperties.AccessibilityView="Raw">
+          <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup x:Name="CommonStates">
+              <VisualState x:Name="Normal" />
+              <VisualState x:Name="PointerOver">
+                <VisualState.Setters>
+                  <Setter Target="ContentPresenter.Background" Value="{ThemeResource ButtonBackgroundPointerOver}" />
+                  <Setter Target="ContentPresenter.BorderBrush" Value="{ThemeResource ButtonBorderBrushPointerOver}" />
+                  <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource ButtonForegroundPointerOver}" />
+                </VisualState.Setters>
+              </VisualState>
+              <VisualState x:Name="Pressed">
+                <VisualState.Setters>
+                  <Setter Target="ContentPresenter.Background" Value="{ThemeResource ButtonBackgroundPressed}" />
+                  <Setter Target="ContentPresenter.BorderBrush" Value="{ThemeResource ButtonBorderBrushPressed}" />
+                  <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource ButtonForegroundPressed}" />
+                </VisualState.Setters>
+              </VisualState>
+              <VisualState x:Name="Disabled">
+                <VisualState.Setters>
+                  <Setter Target="ContentPresenter.Background" Value="{ThemeResource ButtonBackgroundDisabled}" />
+                  <Setter Target="ContentPresenter.BorderBrush" Value="{ThemeResource ButtonBorderBrushDisabled}" />
+                  <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource ButtonForegroundDisabled}" />
+                </VisualState.Setters>
+              </VisualState>
+            </VisualStateGroup>
+          </VisualStateManager.VisualStateGroups>
+        </ContentPresenter>
+      </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+  <!-- ASP-14. The sidebar item: no border, the panel behind it; the subtle fill on hover. The current item is marked in code (a 2px ink
+       bar inside its content and the ground behind it). -->
+  <Style x:Key="LeanSidebarItem" TargetType="Button" BasedOn="{StaticResource DefaultButtonStyle}">
+    <Setter Property="Background" Value="{ThemeResource ButtonBackground}" />
+    <Setter Property="Foreground" Value="{ThemeResource ButtonForeground}" />
+    <Setter Property="BorderThickness" Value="0" />
+    <Setter Property="Padding" Value="0" />
+    <Setter Property="CornerRadius" Value="0" />
+    <Setter Property="MinHeight" Value="40" />
+    <Setter Property="HorizontalAlignment" Value="Stretch" />
+    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+    <Setter Property="VerticalContentAlignment" Value="Center" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="Button">
+        <ContentPresenter x:Name="ContentPresenter" Background="{TemplateBinding Background}" Foreground="{TemplateBinding Foreground}"
+                          BackgroundSizing="{TemplateBinding BackgroundSizing}" BorderBrush="{TemplateBinding BorderBrush}"
+                          BorderThickness="{TemplateBinding BorderThickness}" Content="{TemplateBinding Content}"
+                          ContentTemplate="{TemplateBinding ContentTemplate}" ContentTransitions="{TemplateBinding ContentTransitions}"
+                          CornerRadius="{TemplateBinding CornerRadius}" Padding="{TemplateBinding Padding}"
+                          HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                          VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}" AutomationProperties.AccessibilityView="Raw">
+          <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup x:Name="CommonStates">
+              <VisualState x:Name="Normal" />
+              <VisualState x:Name="PointerOver">
+                <VisualState.Setters>
+                  <Setter Target="ContentPresenter.Background" Value="{ThemeResource SubtleFillColorSecondaryBrush}" />
+                </VisualState.Setters>
+              </VisualState>
+              <VisualState x:Name="Pressed">
+                <VisualState.Setters>
+                  <Setter Target="ContentPresenter.Background" Value="{ThemeResource SubtleFillColorTertiaryBrush}" />
+                </VisualState.Setters>
+              </VisualState>
+              <VisualState x:Name="Disabled">
+                <VisualState.Setters>
+                  <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource ButtonForegroundDisabled}" />
+                </VisualState.Setters>
+              </VisualState>
+            </VisualStateGroup>
+          </VisualStateManager.VisualStateGroups>
+        </ContentPresenter>
+      </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+  <!-- The Scan circle of the start screen: a disc on the ground, outlined 2px in the ink, the label centred. -->
+  <Style x:Key="LeanScanCircle" TargetType="Button" BasedOn="{StaticResource DefaultButtonStyle}">
+    <Setter Property="Foreground" Value="{ThemeResource ButtonForeground}" />
+    <Setter Property="Padding" Value="0" />
+    <Setter Property="HorizontalContentAlignment" Value="Center" />
+    <Setter Property="VerticalContentAlignment" Value="Center" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="Button">
+        <Grid x:Name="Root">
+          <Ellipse x:Name="Disc" Fill="{ThemeResource ApplicationPageBackgroundThemeBrush}" Stroke="{ThemeResource TextFillColorPrimaryBrush}" StrokeThickness="2" />
+          <ContentPresenter x:Name="ContentPresenter" Content="{TemplateBinding Content}" Foreground="{TemplateBinding Foreground}"
+                            ContentTemplate="{TemplateBinding ContentTemplate}" HorizontalAlignment="Center" VerticalAlignment="Center"
+                            AutomationProperties.AccessibilityView="Raw" />
+          <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup x:Name="CommonStates">
+              <VisualState x:Name="Normal" />
+              <VisualState x:Name="PointerOver">
+                <VisualState.Setters>
+                  <Setter Target="Disc.Fill" Value="{ThemeResource SubtleFillColorSecondaryBrush}" />
+                </VisualState.Setters>
+              </VisualState>
+              <VisualState x:Name="Pressed">
+                <VisualState.Setters>
+                  <Setter Target="Disc.Fill" Value="{ThemeResource CardBackgroundFillColorDefaultBrush}" />
+                </VisualState.Setters>
+              </VisualState>
+              <VisualState x:Name="Disabled">
+                <VisualState.Setters>
+                  <Setter Target="Disc.Stroke" Value="{ThemeResource ButtonBorderBrushDisabled}" />
+                  <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource ButtonForegroundDisabled}" />
+                </VisualState.Setters>
+              </VisualState>
+            </VisualStateGroup>
+          </VisualStateManager.VisualStateGroups>
+        </Grid>
+      </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+  <!-- A drive card of the start screen (ASP-14, ASP-18): a tick box whose content is the card, so it is one tab stop with a toggle. The card is a
+       panel with a 1px line and an 8px radius; the mute line on hover; mute text when disabled. The box is drawn in the card's top-right corner
+       with the check box brushes (Default: the frame colours above; High Contrast: the system's), not a default check box beside the card. -->
+  <Style x:Key="LeanDriveCard" TargetType="CheckBox" BasedOn="{StaticResource DefaultCheckBoxStyle}">
+    <Setter Property="Background" Value="{ThemeResource CardBackgroundFillColorDefaultBrush}" />
+    <Setter Property="Foreground" Value="{ThemeResource ButtonForeground}" />
+    <Setter Property="BorderBrush" Value="{ThemeResource ControlStrokeColorDefaultBrush}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="{StaticResource OverlayCornerRadius}" />
+    <Setter Property="Padding" Value="16,14,16,14" />
+    <Setter Property="Width" Value="250" />
+    <Setter Property="MinWidth" Value="0" />
+    <Setter Property="MinHeight" Value="0" />
+    <Setter Property="HorizontalContentAlignment" Value="Left" />
+    <Setter Property="VerticalContentAlignment" Value="Top" />
+    <Setter Property="UseSystemFocusVisuals" Value="False" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="CheckBox">
+          <Grid x:Name="RootGrid" CornerRadius="{TemplateBinding CornerRadius}">
+            <ContentPresenter x:Name="ContentPresenter" Background="{TemplateBinding Background}" Foreground="{TemplateBinding Foreground}"
+                              BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}"
+                              Content="{TemplateBinding Content}" ContentTemplate="{TemplateBinding ContentTemplate}"
+                              CornerRadius="{TemplateBinding CornerRadius}" Padding="{TemplateBinding Padding}"
+                              HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                              VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}" />
+            <!-- The keyboard focus: a 2px ring inside the card's own bounds (the system's ring is drawn outside them). -->
+            <Border x:Name="FocusRing" CornerRadius="{TemplateBinding CornerRadius}" BorderThickness="2" IsHitTestVisible="False" Opacity="0"
+                    BorderBrush="{ThemeResource CheckBoxCheckBackgroundStrokeUncheckedPointerOver}" AutomationProperties.AccessibilityView="Raw" />
+            <Border x:Name="Box" Width="18" Height="18" Margin="0,14,14,0" HorizontalAlignment="Right" VerticalAlignment="Top" CornerRadius="4"
+                    BorderThickness="1" BorderBrush="{ThemeResource CheckBoxCheckBackgroundStrokeUnchecked}"
+                    Background="{ThemeResource CheckBoxCheckBackgroundFillUnchecked}" AutomationProperties.AccessibilityView="Raw">
+              <FontIcon x:Name="Glyph" Glyph="&#xE73E;" FontSize="12" Opacity="0" HorizontalAlignment="Center" VerticalAlignment="Center"
+                        Foreground="{ThemeResource CheckBoxCheckGlyphForegroundChecked}" AutomationProperties.AccessibilityView="Raw" />
+            </Border>
+            <VisualStateManager.VisualStateGroups>
+              <VisualStateGroup x:Name="FocusStates">
+                <VisualState x:Name="Focused">
+                  <VisualState.Setters>
+                    <Setter Target="FocusRing.Opacity" Value="1" />
+                  </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="Unfocused" />
+                <VisualState x:Name="PointerFocused" />
+              </VisualStateGroup>
+              <VisualStateGroup x:Name="CombinedStates">
+                <VisualState x:Name="UncheckedNormal" />
+                <VisualState x:Name="UncheckedPointerOver">
+                  <VisualState.Setters>
+                    <Setter Target="ContentPresenter.BorderBrush" Value="{ThemeResource ButtonBorderBrushPointerOver}" />
+                    <Setter Target="Box.BorderBrush" Value="{ThemeResource CheckBoxCheckBackgroundStrokeUncheckedPointerOver}" />
+                  </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="UncheckedPressed">
+                  <VisualState.Setters>
+                    <Setter Target="ContentPresenter.BorderBrush" Value="{ThemeResource ButtonBorderBrushPressed}" />
+                    <Setter Target="Box.BorderBrush" Value="{ThemeResource CheckBoxCheckBackgroundStrokeUncheckedPressed}" />
+                  </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="UncheckedDisabled">
+                  <VisualState.Setters>
+                    <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource ButtonForegroundDisabled}" />
+                    <Setter Target="Box.BorderBrush" Value="{ThemeResource CheckBoxCheckBackgroundStrokeUncheckedDisabled}" />
+                  </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="CheckedNormal">
+                  <VisualState.Setters>
+                    <Setter Target="Glyph.Opacity" Value="1" />
+                    <Setter Target="Box.BorderBrush" Value="{ThemeResource CheckBoxCheckBackgroundStrokeChecked}" />
+                    <Setter Target="Box.Background" Value="{ThemeResource CheckBoxCheckBackgroundFillChecked}" />
+                  </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="CheckedPointerOver">
+                  <VisualState.Setters>
+                    <Setter Target="ContentPresenter.BorderBrush" Value="{ThemeResource ButtonBorderBrushPointerOver}" />
+                    <Setter Target="Glyph.Opacity" Value="1" />
+                    <Setter Target="Glyph.Foreground" Value="{ThemeResource CheckBoxCheckGlyphForegroundCheckedPointerOver}" />
+                    <Setter Target="Box.BorderBrush" Value="{ThemeResource CheckBoxCheckBackgroundStrokeCheckedPointerOver}" />
+                    <Setter Target="Box.Background" Value="{ThemeResource CheckBoxCheckBackgroundFillCheckedPointerOver}" />
+                  </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="CheckedPressed">
+                  <VisualState.Setters>
+                    <Setter Target="ContentPresenter.BorderBrush" Value="{ThemeResource ButtonBorderBrushPressed}" />
+                    <Setter Target="Glyph.Opacity" Value="1" />
+                    <Setter Target="Glyph.Foreground" Value="{ThemeResource CheckBoxCheckGlyphForegroundCheckedPressed}" />
+                    <Setter Target="Box.BorderBrush" Value="{ThemeResource CheckBoxCheckBackgroundStrokeCheckedPressed}" />
+                    <Setter Target="Box.Background" Value="{ThemeResource CheckBoxCheckBackgroundFillCheckedPressed}" />
+                  </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="CheckedDisabled">
+                  <VisualState.Setters>
+                    <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource ButtonForegroundDisabled}" />
+                    <Setter Target="Glyph.Opacity" Value="1" />
+                    <Setter Target="Glyph.Foreground" Value="{ThemeResource CheckBoxCheckGlyphForegroundCheckedDisabled}" />
+                    <Setter Target="Box.BorderBrush" Value="{ThemeResource CheckBoxCheckBackgroundStrokeCheckedDisabled}" />
+                    <Setter Target="Box.Background" Value="{ThemeResource CheckBoxCheckBackgroundFillCheckedDisabled}" />
+                  </VisualState.Setters>
+                </VisualState>
+              </VisualStateGroup>
+            </VisualStateManager.VisualStateGroups>
+          </Grid>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+  <Style TargetType="ContentDialog" BasedOn="{StaticResource DefaultContentDialogStyle}" />
+
+  <!-- ASP-15. A type tab: no border, the subtle fill on hover; the chosen one reads in the ink with a 2px ink bar under it. A radio button (so
+       UI Automation shows it as a selectable item, one chosen per group) with a template of its own, not the round bullet. -->
+  <Style x:Key="LeanTab" TargetType="RadioButton">
+    <Setter Property="Foreground" Value="{ThemeResource TextFillColorSecondaryBrush}" />
+    <Setter Property="Background" Value="{ThemeResource LeanClearBrush}" />
+    <Setter Property="Padding" Value="12,0,12,0" />
+    <Setter Property="MinWidth" Value="0" />
+    <Setter Property="MinHeight" Value="32" />
+    <Setter Property="UseSystemFocusVisuals" Value="True" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="RadioButton">
+          <Grid x:Name="RootGrid" Background="{TemplateBinding Background}" CornerRadius="{TemplateBinding CornerRadius}">
+            <ContentPresenter x:Name="ContentPresenter" Content="{TemplateBinding Content}" ContentTemplate="{TemplateBinding ContentTemplate}"
+                              Padding="{TemplateBinding Padding}" Foreground="{TemplateBinding Foreground}" VerticalAlignment="Center"
+                              HorizontalContentAlignment="Center" VerticalContentAlignment="Center" AutomationProperties.AccessibilityView="Raw" />
+            <Rectangle x:Name="Bar" Height="2" VerticalAlignment="Bottom" Fill="{ThemeResource TextFillColorPrimaryBrush}" Visibility="Collapsed" />
+            <VisualStateManager.VisualStateGroups>
+              <VisualStateGroup x:Name="CommonStates">
+                <VisualState x:Name="Normal" />
+                <VisualState x:Name="PointerOver">
+                  <VisualState.Setters>
+                    <Setter Target="RootGrid.Background" Value="{ThemeResource SubtleFillColorSecondaryBrush}" />
+                  </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="Pressed">
+                  <VisualState.Setters>
+                    <Setter Target="RootGrid.Background" Value="{ThemeResource SubtleFillColorTertiaryBrush}" />
+                  </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="Disabled">
+                  <VisualState.Setters>
+                    <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource TextFillColorDisabledBrush}" />
+                  </VisualState.Setters>
+                </VisualState>
+              </VisualStateGroup>
+              <VisualStateGroup x:Name="CheckStates">
+                <VisualState x:Name="Unchecked" />
+                <VisualState x:Name="Checked">
+                  <VisualState.Setters>
+                    <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource TextFillColorPrimaryBrush}" />
+                    <Setter Target="Bar.Visibility" Value="Visible" />
+                  </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="Indeterminate" />
+              </VisualStateGroup>
+            </VisualStateManager.VisualStateGroups>
+          </Grid>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <!-- ASP-15. A drop-down menu's separator: an item that is off, drawn as a 1px rule (MenuSeparatorItem gives it its automation peer). -->
+  <Style x:Key="LeanMenuSeparator" TargetType="MenuFlyoutItem">
+    <Setter Property="IsTabStop" Value="False" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="MenuFlyoutItem">
+          <Border Height="9" Background="Transparent" Padding="0,4,0,4">
+            <Rectangle Height="1" Fill="{ThemeResource DividerStrokeColorDefaultBrush}" />
+          </Border>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <!-- The volume card: the panel colour, an 8px radius, the tone as its top border (the code swaps it for the system text colour in High Contrast). -->
+  <Style x:Key="LeanCard" TargetType="StackPanel">
+    <Setter Property="Background" Value="{ThemeResource CardBackgroundFillColorDefaultBrush}" />
+    <Setter Property="BorderBrush" Value="{StaticResource LeanToneBrush}" />
+    <Setter Property="BorderThickness" Value="0,2,0,0" />
+    <Setter Property="CornerRadius" Value="{StaticResource OverlayCornerRadius}" />
+    <Setter Property="Padding" Value="16,12,16,12" />
+  </Style>
+
+  <!-- A table's header row (panel colour) and its rows (a 1px rule under each). -->
+  <Style x:Key="LeanTableHeader" TargetType="Grid">
+    <Setter Property="Background" Value="{ThemeResource CardBackgroundFillColorDefaultBrush}" />
+    <Setter Property="BorderBrush" Value="{ThemeResource DividerStrokeColorDefaultBrush}" />
+    <Setter Property="BorderThickness" Value="0,0,0,1" />
+  </Style>
+  <Style x:Key="LeanTableRow" TargetType="Grid">
+    <Setter Property="BorderBrush" Value="{ThemeResource DividerStrokeColorDefaultBrush}" />
+    <Setter Property="BorderThickness" Value="0,0,0,1" />
+  </Style>
+
+  <!-- ASP-22: one of these behind every cell of a table column (header and rows, LeanTable). The odd column has only the divider; the even one
+       also has the band. Normal theme: the band shows and the divider is clear. High Contrast: the band is clear (the window and button-face
+       colours can be the same there) and the divider, a 1px line in the gap before the column, is the system's disabled text colour. The
+       margin reaches into the gap on both sides and over the row's 1px rule below. -->
+  <Style x:Key="LeanColumnBand" TargetType="Border">
+    <Setter Property="Margin" Value="-4,0,-4,-1" />
+    <Setter Property="IsHitTestVisible" Value="False" />
+    <Setter Property="BorderThickness" Value="1,0,0,0" />
+    <Setter Property="BorderBrush" Value="{ThemeResource LeanColumnDividerFill}" />
+  </Style>
+  <Style x:Key="LeanColumnBandEven" TargetType="Border" BasedOn="{StaticResource LeanColumnBand}">
+    <Setter Property="Background" Value="{ThemeResource LeanColumnBandFill}" />
+  </Style>
+
+  <ResourceDictionary.ThemeDictionaries>
+    <ResourceDictionary x:Key="Default">
+      <!-- The window and its layers. -->
+      <StaticResource x:Key="ApplicationPageBackgroundThemeBrush" ResourceKey="LeanGroundBrush" />
+      <StaticResource x:Key="SolidBackgroundFillColorBaseBrush" ResourceKey="LeanGroundBrush" />
+      <StaticResource x:Key="SolidBackgroundFillColorBaseAltBrush" ResourceKey="LeanGroundBrush" />
+      <StaticResource x:Key="SolidBackgroundFillColorSecondaryBrush" ResourceKey="LeanPanelBrush" />
+      <StaticResource x:Key="SolidBackgroundFillColorTertiaryBrush" ResourceKey="LeanPanelBrush" />
+      <StaticResource x:Key="SolidBackgroundFillColorQuarternaryBrush" ResourceKey="LeanPanelBrush" />
+      <StaticResource x:Key="LayerFillColorDefaultBrush" ResourceKey="LeanPanelBrush" />
+      <StaticResource x:Key="LayerFillColorAltBrush" ResourceKey="LeanGroundBrush" />
+      <StaticResource x:Key="LayerOnAcrylicFillColorDefaultBrush" ResourceKey="LeanPanelBrush" />
+      <StaticResource x:Key="CardBackgroundFillColorDefaultBrush" ResourceKey="LeanPanelBrush" />
+      <StaticResource x:Key="CardBackgroundFillColorSecondaryBrush" ResourceKey="LeanPanelBrush" />
+      <StaticResource x:Key="CardStrokeColorDefaultBrush" ResourceKey="LeanRuleBrush" />
+      <StaticResource x:Key="CardStrokeColorDefaultSolidBrush" ResourceKey="LeanRuleBrush" />
+      <StaticResource x:Key="SurfaceStrokeColorDefaultBrush" ResourceKey="LeanRuleBrush" />
+      <StaticResource x:Key="SurfaceStrokeColorFlyoutBrush" ResourceKey="LeanRuleBrush" />
+      <StaticResource x:Key="SurfaceStrokeColorInverseBrush" ResourceKey="LeanRuleBrush" />
+      <StaticResource x:Key="DividerStrokeColorDefaultBrush" ResourceKey="LeanRuleBrush" />
+      <StaticResource x:Key="AcrylicBackgroundFillColorDefaultBrush" ResourceKey="LeanPanelBrush" />
+      <StaticResource x:Key="AcrylicBackgroundFillColorBaseBrush" ResourceKey="LeanPanelBrush" />
+      <StaticResource x:Key="AcrylicInAppFillColorDefaultBrush" ResourceKey="LeanPanelBrush" />
+      <StaticResource x:Key="AcrylicInAppFillColorBaseBrush" ResourceKey="LeanPanelBrush" />
+      <StaticResource x:Key="SmokeFillColorDefaultBrush" ResourceKey="LeanSmokeBrush" />
+
+      <!-- Text. -->
+      <StaticResource x:Key="DefaultTextForegroundThemeBrush" ResourceKey="LeanInkBrush" />
+      <StaticResource x:Key="TextFillColorPrimaryBrush" ResourceKey="LeanInkBrush" />
+      <StaticResource x:Key="TextFillColorSecondaryBrush" ResourceKey="LeanMuteBrush" />
+      <StaticResource x:Key="TextFillColorTertiaryBrush" ResourceKey="LeanMuteBrush" />
+      <StaticResource x:Key="TextFillColorDisabledBrush" ResourceKey="LeanMuteBrush" />
+      <StaticResource x:Key="TextFillColorInverseBrush" ResourceKey="LeanGroundBrush" />
+      <StaticResource x:Key="TextOnAccentFillColorPrimaryBrush" ResourceKey="LeanGroundBrush" />
+      <StaticResource x:Key="TextOnAccentFillColorSecondaryBrush" ResourceKey="LeanGroundBrush" />
+      <StaticResource x:Key="TextOnAccentFillColorSelectedTextBrush" ResourceKey="LeanGroundBrush" />
+      <StaticResource x:Key="TextOnAccentFillColorDisabledBrush" ResourceKey="LeanMuteBrush" />
+      <StaticResource x:Key="AccentTextFillColorPrimaryBrush" ResourceKey="LeanInkBrush" />
+      <StaticResource x:Key="AccentTextFillColorSecondaryBrush" ResourceKey="LeanInkBrush" />
+      <StaticResource x:Key="AccentTextFillColorTertiaryBrush" ResourceKey="LeanInkBrush" />
+      <StaticResource x:Key="AccentTextFillColorDisabledBrush" ResourceKey="LeanMuteBrush" />
+
+      <!-- Control fills and strokes; the accent is the ink (the tone is never a control's fill). -->
+      <StaticResource x:Key="ControlFillColorDefaultBrush" ResourceKey="LeanGroundBrush" />
+      <StaticResource x:Key="ControlFillColorSecondaryBrush" ResourceKey="LeanPanelBrush" />
+      <StaticResource x:Key="ControlFillColorTertiaryBrush" ResourceKey="LeanPanelBrush" />
+      <StaticResource x:Key="ControlFillColorDisabledBrush" ResourceKey="LeanGroundBrush" />
+      <StaticResource x:Key="ControlFillColorTransparentBrush" ResourceKey="LeanClearBrush" />
+      <StaticResource x:Key="ControlFillColorInputActiveBrush" ResourceKey="LeanGroundBrush" />
+      <StaticResource x:Key="ControlStrongFillColorDefaultBrush" ResourceKey="LeanMuteBrush" />
+      <StaticResource x:Key="ControlStrongFillColorDisabledBrush" ResourceKey="LeanDimBrush" />
+      <StaticResource x:Key="ControlSolidFillColorDefaultBrush" ResourceKey="LeanPanelBrush" />
+      <StaticResource x:Key="SubtleFillColorTransparentBrush" ResourceKey="LeanClearBrush" />
+      <StaticResource x:Key="SubtleFillColorSecondaryBrush" ResourceKey="LeanSelectionBrush" />
+      <StaticResource x:Key="SubtleFillColorTertiaryBrush" ResourceKey="LeanSelectionBrush" />
+      <StaticResource x:Key="SubtleFillColorDisabledBrush" ResourceKey="LeanClearBrush" />
+      <StaticResource x:Key="ControlAltFillColorTransparentBrush" ResourceKey="LeanClearBrush" />
+      <StaticResource x:Key="ControlAltFillColorSecondaryBrush" ResourceKey="LeanPanelBrush" />
+      <StaticResource x:Key="ControlAltFillColorTertiaryBrush" ResourceKey="LeanSelectionBrush" />
+      <StaticResource x:Key="ControlAltFillColorQuarternaryBrush" ResourceKey="LeanSelectionBrush" />
+      <StaticResource x:Key="ControlAltFillColorDisabledBrush" ResourceKey="LeanClearBrush" />
+      <StaticResource x:Key="ControlStrokeColorDefaultBrush" ResourceKey="LeanDimBrush" />
+      <StaticResource x:Key="ControlStrokeColorSecondaryBrush" ResourceKey="LeanDimBrush" />
+      <StaticResource x:Key="ControlStrokeColorOnAccentDefaultBrush" ResourceKey="LeanInkBrush" />
+      <StaticResource x:Key="ControlStrokeColorOnAccentSecondaryBrush" ResourceKey="LeanInkBrush" />
+      <StaticResource x:Key="ControlStrokeColorOnAccentTertiaryBrush" ResourceKey="LeanMuteBrush" />
+      <StaticResource x:Key="ControlStrokeColorOnAccentDisabledBrush" ResourceKey="LeanRuleBrush" />
+      <StaticResource x:Key="ControlStrongStrokeColorDefaultBrush" ResourceKey="LeanMuteBrush" />
+      <StaticResource x:Key="ControlStrongStrokeColorDisabledBrush" ResourceKey="LeanDimBrush" />
+      <StaticResource x:Key="AccentFillColorDefaultBrush" ResourceKey="LeanInkBrush" />
+      <StaticResource x:Key="AccentFillColorSecondaryBrush" ResourceKey="LeanInkBrush" />
+      <StaticResource x:Key="AccentFillColorTertiaryBrush" ResourceKey="LeanMuteBrush" />
+      <StaticResource x:Key="AccentFillColorDisabledBrush" ResourceKey="LeanDimBrush" />
+      <StaticResource x:Key="AccentFillColorSelectedTextBackgroundBrush" ResourceKey="LeanInkBrush" />
+      <StaticResource x:Key="TextControlSelectionHighlightColor" ResourceKey="LeanInkBrush" />
+
+      <!-- Status: none. A warning, a refusal or an error reads as words in the ink; an InfoBar keeps its icon and words. -->
+      <StaticResource x:Key="SystemFillColorAttentionBrush" ResourceKey="LeanInkBrush" />
+      <StaticResource x:Key="SystemFillColorSuccessBrush" ResourceKey="LeanInkBrush" />
+      <StaticResource x:Key="SystemFillColorCautionBrush" ResourceKey="LeanInkBrush" />
+      <StaticResource x:Key="SystemFillColorCriticalBrush" ResourceKey="LeanInkBrush" />
+      <StaticResource x:Key="SystemFillColorNeutralBrush" ResourceKey="LeanMuteBrush" />
+      <StaticResource x:Key="SystemFillColorSolidNeutralBrush" ResourceKey="LeanMuteBrush" />
+      <StaticResource x:Key="SystemFillColorAttentionBackgroundBrush" ResourceKey="LeanPanelBrush" />
+      <StaticResource x:Key="SystemFillColorSuccessBackgroundBrush" ResourceKey="LeanPanelBrush" />
+      <StaticResource x:Key="SystemFillColorCautionBackgroundBrush" ResourceKey="LeanPanelBrush" />
+      <StaticResource x:Key="SystemFillColorCriticalBackgroundBrush" ResourceKey="LeanPanelBrush" />
+      <StaticResource x:Key="SystemFillColorNeutralBackgroundBrush" ResourceKey="LeanPanelBrush" />
+      <StaticResource x:Key="SystemFillColorSolidAttentionBackgroundBrush" ResourceKey="LeanPanelBrush" />
+      <StaticResource x:Key="SystemFillColorSolidNeutralBackgroundBrush" ResourceKey="LeanPanelBrush" />
+      <StaticResource x:Key="InfoBarInformationalSeverityBackgroundBrush" ResourceKey="LeanPanelBrush" />
+      <StaticResource x:Key="InfoBarSuccessSeverityBackgroundBrush" ResourceKey="LeanPanelBrush" />
+      <StaticResource x:Key="InfoBarWarningSeverityBackgroundBrush" ResourceKey="LeanPanelBrush" />
+      <StaticResource x:Key="InfoBarErrorSeverityBackgroundBrush" ResourceKey="LeanPanelBrush" />
+      <StaticResource x:Key="InfoBarInformationalSeverityIconBackground" ResourceKey="LeanInkBrush" />
+      <StaticResource x:Key="InfoBarSuccessSeverityIconBackground" ResourceKey="LeanInkBrush" />
+      <StaticResource x:Key="InfoBarWarningSeverityIconBackground" ResourceKey="LeanInkBrush" />
+      <StaticResource x:Key="InfoBarErrorSeverityIconBackground" ResourceKey="LeanInkBrush" />
+      <StaticResource x:Key="InfoBarIconForeground" ResourceKey="LeanGroundBrush" />
+      <StaticResource x:Key="InfoBarBorderBrush" ResourceKey="LeanRuleBrush" />
+
+      <!-- Focus: a 2px ink ring with a 1px ground ring inside it. -->
+      <StaticResource x:Key="FocusStrokeColorOuterBrush" ResourceKey="LeanInkBrush" />
+      <StaticResource x:Key="FocusStrokeColorInnerBrush" ResourceKey="LeanGroundBrush" />
+      <StaticResource x:Key="SystemControlFocusVisualPrimaryBrush" ResourceKey="LeanInkBrush" />
+      <StaticResource x:Key="SystemControlFocusVisualSecondaryBrush" ResourceKey="LeanGroundBrush" />
+
+      <!-- Buttons. Ghost (the default): transparent, a 1px dim border, ink text; the border is mute on hover. -->
+      <StaticResource x:Key="ButtonBackground" ResourceKey="LeanClearBrush" />
+      <StaticResource x:Key="ButtonBackgroundPointerOver" ResourceKey="LeanClearBrush" />
+      <StaticResource x:Key="ButtonBackgroundPressed" ResourceKey="LeanClearBrush" />
+      <StaticResource x:Key="ButtonBackgroundDisabled" ResourceKey="LeanClearBrush" />
+      <StaticResource x:Key="ButtonForeground" ResourceKey="LeanInkBrush" />
+      <StaticResource x:Key="ButtonForegroundPointerOver" ResourceKey="LeanInkBrush" />
+      <StaticResource x:Key="ButtonForegroundPressed" ResourceKey="LeanInkBrush" />
+      <StaticResource x:Key="ButtonForegroundDisabled" ResourceKey="LeanMuteBrush" />
+      <StaticResource x:Key="ButtonBorderBrush" ResourceKey="LeanDimBrush" />
+      <StaticResource x:Key="ButtonBorderBrushPointerOver" ResourceKey="LeanMuteBrush" />
+      <StaticResource x:Key="ButtonBorderBrushPressed" ResourceKey="LeanInkBrush" />
+      <StaticResource x:Key="ButtonBorderBrushDisabled" ResourceKey="LeanRuleBrush" />
+      <!-- Primary (LeanPrimaryButton is the accent button style): ink fill and ground text, white on hover. -->
+      <StaticResource x:Key="AccentButtonBackground" ResourceKey="LeanInkBrush" />
+      <StaticResource x:Key="AccentButtonBackgroundPointerOver" ResourceKey="LeanWhiteBrush" />
+      <StaticResource x:Key="AccentButtonBackgroundPressed" ResourceKey="LeanMuteBrush" />
+      <StaticResource x:Key="AccentButtonBackgroundDisabled" ResourceKey="LeanClearBrush" />
+      <StaticResource x:Key="AccentButtonForeground" ResourceKey="LeanGroundBrush" />
+      <StaticResource x:Key="AccentButtonForegroundPointerOver" ResourceKey="LeanGroundBrush" />
+      <StaticResource x:Key="AccentButtonForegroundPressed" ResourceKey="LeanGroundBrush" />
+      <StaticResource x:Key="AccentButtonForegroundDisabled" ResourceKey="LeanMuteBrush" />
+      <StaticResource x:Key="AccentButtonBorderBrush" ResourceKey="LeanInkBrush" />
+      <StaticResource x:Key="AccentButtonBorderBrushPointerOver" ResourceKey="LeanWhiteBrush" />
+      <StaticResource x:Key="AccentButtonBorderBrushPressed" ResourceKey="LeanMuteBrush" />
+      <StaticResource x:Key="AccentButtonBorderBrushDisabled" ResourceKey="LeanRuleBrush" />
+
+      <!-- Check boxes and radio buttons: the tick in ink on the ground. The unticked outline is mute (the dim line is too faint for a
+           control's edge). -->
+      <StaticResource x:Key="CheckBoxForegroundUnchecked" ResourceKey="LeanInkBrush" />
+      <StaticResource x:Key="CheckBoxForegroundUncheckedPointerOver" ResourceKey="LeanInkBrush" />
+      <StaticResource x:Key="CheckBoxForegroundUncheckedPressed" ResourceKey="LeanInkBrush" />
+      <StaticResource x:Key="CheckBoxForegroundUncheckedDisabled" ResourceKey="LeanMuteBrush" />
+      <StaticResource x:Key="CheckBoxForegroundChecked" ResourceKey="LeanInkBrush" />
+      <StaticResource x:Key="CheckBoxForegroundCheckedPointerOver" ResourceKey="LeanInkBrush" />
+      <StaticResource x:Key="CheckBoxForegroundCheckedPressed" ResourceKey="LeanInkBrush" />
+      <StaticResource x:Key="CheckBoxForegroundCheckedDisabled" ResourceKey="LeanMuteBrush" />
+      <StaticResource x:Key="CheckBoxForegroundIndeterminate" ResourceKey="LeanInkBrush" />
+      <StaticResource x:Key="CheckBoxForegroundIndeterminatePointerOver" ResourceKey="LeanInkBrush" />
+      <StaticResource x:Key="CheckBoxForegroundIndeterminatePressed" ResourceKey="LeanInkBrush" />
+      <StaticResource x:Key="CheckBoxForegroundIndeterminateDisabled" ResourceKey="LeanMuteBrush" />
+      <StaticResource x:Key="CheckBoxCheckBackgroundStrokeUnchecked" ResourceKey="LeanMuteBrush" />
+      <StaticResource x:Key="CheckBoxCheckBackgroundStrokeUncheckedPointerOver" ResourceKey="LeanInkBrush" />
+      <StaticResource x:Key="CheckBoxCheckBackgroundStrokeUncheckedPressed" ResourceKey="LeanInkBrush" />
+      <StaticResource x:Key="CheckBoxCheckBackgroundStrokeUncheckedDisabled" ResourceKey="LeanDimBrush" />
+      <StaticResource x:Key="CheckBoxCheckBackgroundFillUnchecked" ResourceKey="LeanClearBrush" />
+      <StaticResource x:Key="CheckBoxCheckBackgroundFillUncheckedPointerOver" ResourceKey="LeanClearBrush" />
+      <StaticResource x:Key="CheckBoxCheckBackgroundFillUncheckedPressed" ResourceKey="LeanClearBrush" />
+      <StaticResource x:Key="CheckBoxCheckBackgroundFillUncheckedDisabled" ResourceKey="LeanClearBrush" />
+      <StaticResource x:Key="CheckBoxCheckBackgroundStrokeChecked" ResourceKey="LeanInkBrush" />
+      <StaticResource x:Key="CheckBoxCheckBackgroundStrokeCheckedPointerOver" ResourceKey="LeanInkBrush" />
+      <StaticResource x:Key="CheckBoxCheckBackgroundStrokeCheckedPressed" ResourceKey="LeanInkBrush" />
+      <StaticResource x:Key="CheckBoxCheckBackgroundStrokeCheckedDisabled" ResourceKey="LeanDimBrush" />
+      <StaticResource x:Key="CheckBoxCheckBackgroundFillChecked" ResourceKey="LeanGroundBrush" />
+      <StaticResource x:Key="CheckBoxCheckBackgroundFillCheckedPointerOver" ResourceKey="LeanGroundBrush" />
+      <StaticResource x:Key="CheckBoxCheckBackgroundFillCheckedPressed" ResourceKey="LeanGroundBrush" />
+      <StaticResource x:Key="CheckBoxCheckBackgroundFillCheckedDisabled" ResourceKey="LeanClearBrush" />
+      <StaticResource x:Key="CheckBoxCheckBackgroundStrokeIndeterminate" ResourceKey="LeanInkBrush" />
+      <StaticResource x:Key="CheckBoxCheckBackgroundStrokeIndeterminatePointerOver" ResourceKey="LeanInkBrush" />
+      <StaticResource x:Key="CheckBoxCheckBackgroundStrokeIndeterminatePressed" ResourceKey="LeanInkBrush" />
+      <StaticResource x:Key="CheckBoxCheckBackgroundStrokeIndeterminateDisabled" ResourceKey="LeanDimBrush" />
+      <StaticResource x:Key="CheckBoxCheckBackgroundFillIndeterminate" ResourceKey="LeanGroundBrush" />
+      <StaticResource x:Key="CheckBoxCheckBackgroundFillIndeterminatePointerOver" ResourceKey="LeanGroundBrush" />
+      <StaticResource x:Key="CheckBoxCheckBackgroundFillIndeterminatePressed" ResourceKey="LeanGroundBrush" />
+      <StaticResource x:Key="CheckBoxCheckBackgroundFillIndeterminateDisabled" ResourceKey="LeanClearBrush" />
+      <StaticResource x:Key="CheckBoxCheckGlyphForegroundChecked" ResourceKey="LeanInkBrush" />
+      <StaticResource x:Key="CheckBoxCheckGlyphForegroundCheckedPointerOver" ResourceKey="LeanInkBrush" />
+      <StaticResource x:Key="CheckBoxCheckGlyphForegroundCheckedPressed" ResourceKey="LeanInkBrush" />
+      <StaticResource x:Key="CheckBoxCheckGlyphForegroundCheckedDisabled" ResourceKey="LeanMuteBrush" />
+      <StaticResource x:Key="CheckBoxCheckGlyphForegroundIndeterminate" ResourceKey="LeanInkBrush" />
+      <StaticResource x:Key="CheckBoxCheckGlyphForegroundIndeterminatePointerOver" ResourceKey="LeanInkBrush" />
+      <StaticResource x:Key="CheckBoxCheckGlyphForegroundIndeterminatePressed" ResourceKey="LeanInkBrush" />
+      <StaticResource x:Key="CheckBoxCheckGlyphForegroundIndeterminateDisabled" ResourceKey="LeanMuteBrush" />
+      <StaticResource x:Key="RadioButtonForeground" ResourceKey="LeanInkBrush" />
+      <StaticResource x:Key="RadioButtonForegroundPointerOver" ResourceKey="LeanInkBrush" />
+      <StaticResource x:Key="RadioButtonForegroundPressed" ResourceKey="LeanInkBrush" />
+      <StaticResource x:Key="RadioButtonForegroundDisabled" ResourceKey="LeanMuteBrush" />
+      <StaticResource x:Key="RadioButtonOuterEllipseStroke" ResourceKey="LeanMuteBrush" />
+      <StaticResource x:Key="RadioButtonOuterEllipseStrokePointerOver" ResourceKey="LeanInkBrush" />
+      <StaticResource x:Key="RadioButtonOuterEllipseStrokePressed" ResourceKey="LeanInkBrush" />
+      <StaticResource x:Key="RadioButtonOuterEllipseStrokeDisabled" ResourceKey="LeanDimBrush" />
+      <StaticResource x:Key="RadioButtonOuterEllipseFill" ResourceKey="LeanClearBrush" />
+      <StaticResource x:Key="RadioButtonOuterEllipseFillPointerOver" ResourceKey="LeanClearBrush" />
+      <StaticResource x:Key="RadioButtonOuterEllipseFillPressed" ResourceKey="LeanClearBrush" />
+      <StaticResource x:Key="RadioButtonOuterEllipseFillDisabled" ResourceKey="LeanClearBrush" />
+      <StaticResource x:Key="RadioButtonOuterEllipseCheckedStroke" ResourceKey="LeanInkBrush" />
+      <StaticResource x:Key="RadioButtonOuterEllipseCheckedStrokePointerOver" ResourceKey="LeanInkBrush" />
+      <StaticResource x:Key="RadioButtonOuterEllipseCheckedStrokePressed" ResourceKey="LeanInkBrush" />
+      <StaticResource x:Key="RadioButtonOuterEllipseCheckedStrokeDisabled" ResourceKey="LeanDimBrush" />
+      <StaticResource x:Key="RadioButtonOuterEllipseCheckedFill" ResourceKey="LeanGroundBrush" />
+      <StaticResource x:Key="RadioButtonOuterEllipseCheckedFillPointerOver" ResourceKey="LeanGroundBrush" />
+      <StaticResource x:Key="RadioButtonOuterEllipseCheckedFillPressed" ResourceKey="LeanGroundBrush" />
+      <StaticResource x:Key="RadioButtonOuterEllipseCheckedFillDisabled" ResourceKey="LeanClearBrush" />
+      <StaticResource x:Key="RadioButtonCheckGlyphFill" ResourceKey="LeanInkBrush" />
+      <StaticResource x:Key="RadioButtonCheckGlyphFillPointerOver" ResourceKey="LeanInkBrush" />
+      <StaticResource x:Key="RadioButtonCheckGlyphFillPressed" ResourceKey="LeanInkBrush" />
+      <StaticResource x:Key="RadioButtonCheckGlyphFillDisabled" ResourceKey="LeanMuteBrush" />
+      <StaticResource x:Key="RadioButtonCheckGlyphStroke" ResourceKey="LeanInkBrush" />
+      <StaticResource x:Key="RadioButtonCheckGlyphStrokePointerOver" ResourceKey="LeanInkBrush" />
+      <StaticResource x:Key="RadioButtonCheckGlyphStrokePressed" ResourceKey="LeanInkBrush" />
+      <StaticResource x:Key="RadioButtonCheckGlyphStrokeDisabled" ResourceKey="LeanMuteBrush" />
+
+      <!-- Text boxes. -->
+      <StaticResource x:Key="TextControlBackground" ResourceKey="LeanGroundBrush" />
+      <StaticResource x:Key="TextControlBackgroundPointerOver" ResourceKey="LeanGroundBrush" />
+      <StaticResource x:Key="TextControlBackgroundFocused" ResourceKey="LeanGroundBrush" />
+      <StaticResource x:Key="TextControlBackgroundDisabled" ResourceKey="LeanGroundBrush" />
+      <StaticResource x:Key="TextControlForeground" ResourceKey="LeanInkBrush" />
+      <StaticResource x:Key="TextControlForegroundPointerOver" ResourceKey="LeanInkBrush" />
+      <StaticResource x:Key="TextControlForegroundFocused" ResourceKey="LeanInkBrush" />
+      <StaticResource x:Key="TextControlForegroundDisabled" ResourceKey="LeanMuteBrush" />
+      <StaticResource x:Key="TextControlBorderBrush" ResourceKey="LeanDimBrush" />
+      <StaticResource x:Key="TextControlBorderBrushPointerOver" ResourceKey="LeanMuteBrush" />
+      <StaticResource x:Key="TextControlBorderBrushFocused" ResourceKey="LeanInkBrush" />
+      <StaticResource x:Key="TextControlBorderBrushDisabled" ResourceKey="LeanRuleBrush" />
+      <StaticResource x:Key="TextControlPlaceholderForeground" ResourceKey="LeanMuteBrush" />
+      <StaticResource x:Key="TextControlPlaceholderForegroundPointerOver" ResourceKey="LeanMuteBrush" />
+      <StaticResource x:Key="TextControlPlaceholderForegroundFocused" ResourceKey="LeanMuteBrush" />
+      <StaticResource x:Key="TextControlPlaceholderForegroundDisabled" ResourceKey="LeanMuteBrush" />
+      <StaticResource x:Key="TextControlHeaderForeground" ResourceKey="LeanInkBrush" />
+      <StaticResource x:Key="TextControlHeaderForegroundDisabled" ResourceKey="LeanMuteBrush" />
+
+      <!-- Combo boxes and their list. -->
+      <StaticResource x:Key="ComboBoxBackground" ResourceKey="LeanGroundBrush" />
+      <StaticResource x:Key="ComboBoxBackgroundPointerOver" ResourceKey="LeanGroundBrush" />
+      <StaticResource x:Key="ComboBoxBackgroundPressed" ResourceKey="LeanGroundBrush" />
+      <StaticResource x:Key="ComboBoxBackgroundDisabled" ResourceKey="LeanGroundBrush" />
+      <StaticResource x:Key="ComboBoxBackgroundFocused" ResourceKey="LeanGroundBrush" />
+      <StaticResource x:Key="ComboBoxBackgroundFocusedDropDown" ResourceKey="LeanGroundBrush" />
+      <StaticResource x:Key="ComboBoxForeground" ResourceKey="LeanInkBrush" />
+      <StaticResource x:Key="ComboBoxForegroundPointerOver" ResourceKey="LeanInkBrush" />
+      <StaticResource x:Key="ComboBoxForegroundPressed" ResourceKey="LeanInkBrush" />
+      <StaticResource x:Key="ComboBoxForegroundDisabled" ResourceKey="LeanMuteBrush" />
+      <StaticResource x:Key="ComboBoxForegroundFocused" ResourceKey="LeanInkBrush" />
+      <StaticResource x:Key="ComboBoxForegroundFocusedPressed" ResourceKey="LeanInkBrush" />
+      <StaticResource x:Key="ComboBoxBorderBrush" ResourceKey="LeanDimBrush" />
+      <StaticResource x:Key="ComboBoxBorderBrushPointerOver" ResourceKey="LeanMuteBrush" />
+      <StaticResource x:Key="ComboBoxBorderBrushPressed" ResourceKey="LeanInkBrush" />
+      <StaticResource x:Key="ComboBoxBorderBrushDisabled" ResourceKey="LeanRuleBrush" />
+      <StaticResource x:Key="ComboBoxPlaceHolderForeground" ResourceKey="LeanMuteBrush" />
+      <StaticResource x:Key="ComboBoxDropDownGlyphForeground" ResourceKey="LeanMuteBrush" />
+      <StaticResource x:Key="ComboBoxDropDownBackground" ResourceKey="LeanPanelBrush" />
+      <StaticResource x:Key="ComboBoxDropDownBorderBrush" ResourceKey="LeanRuleBrush" />
+      <StaticResource x:Key="ComboBoxItemBackground" ResourceKey="LeanClearBrush" />
+      <StaticResource x:Key="ComboBoxItemBackgroundPointerOver" ResourceKey="LeanSelectionBrush" />
+      <StaticResource x:Key="ComboBoxItemBackgroundPressed" ResourceKey="LeanSelectionBrush" />
+      <StaticResource x:Key="ComboBoxItemBackgroundDisabled" ResourceKey="LeanClearBrush" />
+      <StaticResource x:Key="ComboBoxItemBackgroundSelected" ResourceKey="LeanSelectionBrush" />
+      <StaticResource x:Key="ComboBoxItemBackgroundSelectedPointerOver" ResourceKey="LeanSelectionBrush" />
+      <StaticResource x:Key="ComboBoxItemBackgroundSelectedPressed" ResourceKey="LeanSelectionBrush" />
+      <StaticResource x:Key="ComboBoxItemBackgroundSelectedDisabled" ResourceKey="LeanClearBrush" />
+      <StaticResource x:Key="ComboBoxItemForeground" ResourceKey="LeanInkBrush" />
+      <StaticResource x:Key="ComboBoxItemForegroundPointerOver" ResourceKey="LeanInkBrush" />
+      <StaticResource x:Key="ComboBoxItemForegroundPressed" ResourceKey="LeanInkBrush" />
+      <StaticResource x:Key="ComboBoxItemForegroundDisabled" ResourceKey="LeanMuteBrush" />
+      <StaticResource x:Key="ComboBoxItemForegroundSelected" ResourceKey="LeanInkBrush" />
+      <StaticResource x:Key="ComboBoxItemForegroundSelectedPointerOver" ResourceKey="LeanInkBrush" />
+      <StaticResource x:Key="ComboBoxItemForegroundSelectedPressed" ResourceKey="LeanInkBrush" />
+      <StaticResource x:Key="ComboBoxItemForegroundSelectedDisabled" ResourceKey="LeanMuteBrush" />
+      <StaticResource x:Key="ComboBoxItemPillFillBrush" ResourceKey="LeanInkBrush" />
+
+      <!-- List rows: the selection brush is #1a1a1b; the indicator is the ink. -->
+      <StaticResource x:Key="ListViewItemBackground" ResourceKey="LeanClearBrush" />
+      <StaticResource x:Key="ListViewItemBackgroundPointerOver" ResourceKey="LeanSelectionBrush" />
+      <StaticResource x:Key="ListViewItemBackgroundPressed" ResourceKey="LeanSelectionBrush" />
+      <StaticResource x:Key="ListViewItemBackgroundSelected" ResourceKey="LeanSelectionBrush" />
+      <StaticResource x:Key="ListViewItemBackgroundSelectedPointerOver" ResourceKey="LeanSelectionBrush" />
+      <StaticResource x:Key="ListViewItemBackgroundSelectedPressed" ResourceKey="LeanSelectionBrush" />
+      <StaticResource x:Key="ListViewItemBackgroundSelectedDisabled" ResourceKey="LeanClearBrush" />
+      <StaticResource x:Key="ListViewItemForeground" ResourceKey="LeanInkBrush" />
+      <StaticResource x:Key="ListViewItemForegroundPointerOver" ResourceKey="LeanInkBrush" />
+      <StaticResource x:Key="ListViewItemForegroundSelected" ResourceKey="LeanInkBrush" />
+      <StaticResource x:Key="ListViewItemForegroundDisabled" ResourceKey="LeanMuteBrush" />
+      <StaticResource x:Key="ListViewItemSelectionIndicatorBrush" ResourceKey="LeanInkBrush" />
+      <StaticResource x:Key="ListViewItemSelectionIndicatorPointerOverBrush" ResourceKey="LeanInkBrush" />
+      <StaticResource x:Key="ListViewItemSelectionIndicatorPressedBrush" ResourceKey="LeanInkBrush" />
+      <StaticResource x:Key="ListViewItemSelectionIndicatorDisabledBrush" ResourceKey="LeanDimBrush" />
+      <StaticResource x:Key="ListViewItemFocusVisualPrimaryBrush" ResourceKey="LeanInkBrush" />
+      <StaticResource x:Key="ListViewItemFocusVisualSecondaryBrush" ResourceKey="LeanGroundBrush" />
+      <StaticResource x:Key="ListViewItemFocusSecondaryBorderBrush" ResourceKey="LeanGroundBrush" />
+      <StaticResource x:Key="ListViewItemCheckBrush" ResourceKey="LeanInkBrush" />
+      <StaticResource x:Key="ListViewItemCheckBoxBrush" ResourceKey="LeanMuteBrush" />
+
+      <!-- Dialogs, tooltips, flyouts and menus. -->
+      <StaticResource x:Key="ContentDialogBackground" ResourceKey="LeanPanelBrush" />
+      <StaticResource x:Key="ContentDialogForeground" ResourceKey="LeanInkBrush" />
+      <StaticResource x:Key="ContentDialogBorderBrush" ResourceKey="LeanRuleBrush" />
+      <StaticResource x:Key="ContentDialogSeparatorBorderBrush" ResourceKey="LeanRuleBrush" />
+      <StaticResource x:Key="ContentDialogTopOverlay" ResourceKey="LeanPanelBrush" />
+      <StaticResource x:Key="ToolTipBackground" ResourceKey="LeanPanelBrush" />
+      <StaticResource x:Key="ToolTipForeground" ResourceKey="LeanInkBrush" />
+      <StaticResource x:Key="ToolTipBorderBrush" ResourceKey="LeanRuleBrush" />
+      <StaticResource x:Key="FlyoutPresenterBackground" ResourceKey="LeanPanelBrush" />
+      <StaticResource x:Key="FlyoutBorderThemeBrush" ResourceKey="LeanRuleBrush" />
+      <StaticResource x:Key="MenuFlyoutPresenterBackground" ResourceKey="LeanPanelBrush" />
+      <StaticResource x:Key="MenuFlyoutPresenterBorderBrush" ResourceKey="LeanRuleBrush" />
+      <StaticResource x:Key="MenuFlyoutItemBackground" ResourceKey="LeanClearBrush" />
+      <StaticResource x:Key="MenuFlyoutItemBackgroundPointerOver" ResourceKey="LeanSelectionBrush" />
+      <StaticResource x:Key="MenuFlyoutItemBackgroundPressed" ResourceKey="LeanSelectionBrush" />
+      <StaticResource x:Key="MenuFlyoutItemBackgroundDisabled" ResourceKey="LeanClearBrush" />
+      <StaticResource x:Key="MenuFlyoutItemForeground" ResourceKey="LeanInkBrush" />
+      <StaticResource x:Key="MenuFlyoutItemForegroundPointerOver" ResourceKey="LeanInkBrush" />
+      <StaticResource x:Key="MenuFlyoutItemForegroundPressed" ResourceKey="LeanInkBrush" />
+      <StaticResource x:Key="MenuFlyoutItemForegroundDisabled" ResourceKey="LeanMuteBrush" />
+      <StaticResource x:Key="MenuFlyoutSeparatorBackground" ResourceKey="LeanRuleBrush" />
+
+      <!-- Scroll bars (dim thumb), the progress bar (the one place the tone is a fill) and the ring (ink). -->
+      <StaticResource x:Key="ScrollBarThumbFill" ResourceKey="LeanDimBrush" />
+      <StaticResource x:Key="ScrollBarThumbFillPointerOver" ResourceKey="LeanMuteBrush" />
+      <StaticResource x:Key="ScrollBarThumbFillPressed" ResourceKey="LeanMuteBrush" />
+      <StaticResource x:Key="ScrollBarThumbFillDisabled" ResourceKey="LeanDimBrush" />
+      <StaticResource x:Key="ScrollBarTrackFill" ResourceKey="LeanClearBrush" />
+      <StaticResource x:Key="ScrollBarTrackFillPointerOver" ResourceKey="LeanClearBrush" />
+      <StaticResource x:Key="ScrollBarTrackStroke" ResourceKey="LeanClearBrush" />
+      <StaticResource x:Key="ScrollBarTrackStrokePointerOver" ResourceKey="LeanClearBrush" />
+      <StaticResource x:Key="ScrollBarPanningThumbBackground" ResourceKey="LeanDimBrush" />
+      <StaticResource x:Key="ProgressBarForeground" ResourceKey="LeanToneBrush" />
+      <StaticResource x:Key="ProgressBarBackground" ResourceKey="LeanDimBrush" />
+      <StaticResource x:Key="ProgressBarBorderBrush" ResourceKey="LeanClearBrush" />
+      <StaticResource x:Key="ProgressRingForegroundThemeBrush" ResourceKey="LeanInkBrush" />
+
+      <!-- The sidebar's ground (ASP-15). -->
+      <StaticResource x:Key="LeanSidebarFill" ResourceKey="LeanSidebarBrush" />
+
+      <!-- The dividers of the top band (ASP-18). -->
+      <StaticResource x:Key="LeanDividerFill" ResourceKey="LeanDividerBrush" />
+
+      <!-- The column bands of the tables (ASP-22). -->
+      <StaticResource x:Key="LeanColumnBandFill" ResourceKey="LeanBandBrush" />
+      <StaticResource x:Key="LeanColumnDividerFill" ResourceKey="LeanRuleBrush" />
+    </ResourceDictionary>
+
+    <!-- High Contrast: nothing is overridden, so every control uses the system's colours; the sidebar's ground is the system's window colour. -->
+    <ResourceDictionary x:Key="HighContrast">
+      <SolidColorBrush x:Key="LeanSidebarFill" Color="{ThemeResource SystemColorWindowColor}" />
+      <!-- ASP-18: the dividers of the top band take the system's disabled text colour. -->
+      <SolidColorBrush x:Key="LeanDividerFill" Color="{ThemeResource SystemColorGrayTextColor}" />
+      <!-- ASP-22: no band; a 1px divider between table columns in the disabled text colour. -->
+      <SolidColorBrush x:Key="LeanColumnBandFill" Color="Transparent" />
+      <SolidColorBrush x:Key="LeanColumnDividerFill" Color="{ThemeResource SystemColorGrayTextColor}" />
+    </ResourceDictionary>
+  </ResourceDictionary.ThemeDictionaries>
+</ResourceDictionary>

@@ -1,0 +1,18 @@
+# ASP-7 acceptance fixtures
+
+Criterion 5 uses `MacV1DuplicateCorpusTests.OriginalMacV1CorpusHasExactlyFiveThreeCopyGroupsAndZeroFalsePositives`.
+It reproduces the duplicate-related sections of `scripts/make-fixture.swift` from the original macOS-v1 proof:
+
+- Section 3: a 2,000,000-byte file filled with `0x41`, with three additional hard links.
+- Section 4: five groups, each three 1,500,000-byte files filled with `100 + group` (groups 0 through 4).
+- Section 4 near corpus: three 1,500,000-byte files filled with `7`, with byte 750,000 replaced by copy index 0 through 2.
+
+The expected result is exactly the five planted groups of three, with no other members or groups. This is the result recorded in original `intent/2026-10-10-ambysto-space-macos-v1.plan.md`, group 9 and proof 7. The Windows fixture lives under an isolated profile's Documents folder to satisfy Windows' allowed-home candidate rule. It preserves the original contents, sizes, hard-link identities and expected result. The generator's other sections are the scan/performance fixture, not duplicate-identity corpus requirements.
+
+The original macOS `Tests/SpaceCoreTests/FindTests.swift` also covers identical vs different content, a same-edges different-middle pair, hard links, unreadability, exclusions, folder scans, minimum size, suggested-keep order and last-copy protection. Windows' `DuplicateRuleTests`, `DuplicateKeepRuleTests`, `DuplicateSelectionTests`, `CloudPlaceholderTests` and `DuplicateIdentityOnOpenTests` cover those properties. Windows-specific exclusions (AppData and hidden attributes) and package-folder inclusion follow `docs/spec/03-large-old-and-duplicates.md`; macOS package and Library exclusions are not copied into Windows semantics. Shared-block labeling follows the Windows volume capability rule, rather than macOS clone flags.
+
+Criterion 1's partial cloud row is `RealGateRefusalTests.APartiallyHydratedCloudFileOrFolderIsRefusedWithoutFetchingItsTail`, both file and containing-folder rows. It needs AmbyCloud at its existing test path and the standard user's console session. `CloudPartial.KeepPrefix` fully hydrates its isolated 4 MiB placeholder, stops the provider, connects as provider and dehydrates the tail after an aligned 64 KiB prefix. It restarts the provider, requires `0 < OnDisk < Size`, placeholder and recall flags, then resets the fetch-log baseline. The real Trasher must refuse before the recycler, preserve the partial on-disk count, and make no fetch. A separate one-byte positive control first proves this test process appears in the provider log. Fixture disposal disconnects/unregisters the temporary root. This setup must fail if the platform cannot produce that partial state; online-only/full hydration is not accepted as substitute evidence.
+
+Criterion 7's existing `PreviewGapTests.FolderItemOwnedBySomeoneElseIsRefusedButAReadableFileIsNot` needs a fixture created by an administrator and a test run as the standard user. Run `Set-OtherOwnerFixture.ps1 -TestUser '<machine>\ambytest' -ProfilePath 'C:\Users\ambytest'` elevated, execute the named test as ambytest, then run the same script elevated with `-Remove`. The script refuses an existing root, grants read/execute to that user, assigns the top folder to the user and both children to Administrators. Cleanup requires its own matching marker and refuses unexpected entries or reparse points. It changes no existing ACL, account, registry value or machine setting. Do not run the acceptance test elevated: that would not prove the standard-user rule.
+
+These additions require VM execution before they count as proofs. No result is inferred from their presence.
